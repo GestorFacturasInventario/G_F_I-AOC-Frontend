@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Router } from '@angular/router';
 import { AuthService } from '../services/auth.service';
 
 @Component({
@@ -8,32 +8,24 @@ import { AuthService } from '../services/auth.service';
     template: `<p>Autenticando con Google...</p>`
 })
 export class GoogleSuccessComponent implements OnInit {
+    private processed = false;
+
     constructor(
-        private route: ActivatedRoute,
         private authService: AuthService,
         private router: Router
     ) {}
 
     ngOnInit(): void {
-        this.route.queryParams.subscribe(params => {
-            const token = params['token'];
-            const refresh = params['refresh'];
+        if (this.processed) return;
+        this.processed = true;
 
-            if (token) {
-                const userId = this.decodeToken(token)?.id;
-                this.authService.handleGoogleCallback(token, refresh, userId);
-            } else {
-                this.router.navigate(['/login']);
+        this.authService.refreshAccessToken().subscribe({
+            next: () => {
+                this.router.navigate(['/home'], { replaceUrl: true });
+            },
+            error: () => {
+                this.router.navigate(['/login'], { queryParams: { error: 'session' }, replaceUrl: true });
             }
         });
-    }
-
-    private decodeToken(token: string): any {
-        try {
-            const payload = token.split('.')[1];
-            return JSON.parse(atob(payload));
-        } catch (error) {
-            return null;
-        }
     }
 }

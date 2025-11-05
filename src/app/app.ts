@@ -15,6 +15,8 @@ export class App {
 
   constructor(private auth: AuthService) {}
   ngOnInit() {
-    this.auth.bootstrap().subscribe({ error: () => { /* Puede fallar si no hay sesion */} });
+    if (!this.auth.isAuthenticated()) {
+      this.auth.bootstrap().subscribe({ error: () => { /* Sin sesion */} });
+    }
   }
 }

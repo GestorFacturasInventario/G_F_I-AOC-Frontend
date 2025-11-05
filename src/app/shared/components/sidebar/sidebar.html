@@ -1,0 +1,20 @@
+<nav class="nav">
+    <!-- Header del sidebar con logo -->
+    <div class="sidebar-header">
+      <div class="logo">
+        <div class="logo-icon">1DD</div>
+        <div class="logo-text">Control</div>
+      </div>
+    </div>
+  
+    <div class="menu">
+      <a routerLink="/home" routerLinkActive="active" class="item" [routerLinkActiveOptions]="{ exact: true}">Inicio</a>
+      <a routerLink="/Usuarios" routerLinkActive="active" class="item">Usuarios</a>
+      <a routerLink="/Cotizaciones" routerLinkActive="active" class="item">Cotizaciones</a>
+      <a routerLink="/Ordenes" routerLinkActive="active" class="item">Ordenes</a>
+      <a routerLink="/Facturas" routerLinkActive="active" class="item">Facturas</a>
+      <a routerLink="/Inventario" routerLinkActive="active" class="item">Inventario</a>
+    </div>
+  
+    <button type="button" class="logout-btn" (click)="logout()">Cerrar Sesión</button>
+  </nav>

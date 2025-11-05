@@ -1,7 +1,7 @@
 import { Inject, Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
-import { Observable, tap, map, throwError } from 'rxjs';
+import { Observable, tap, map, throwError, shareReplay, finalize } from 'rxjs';
 
 @Injectable({
     providedIn: 'root'
@@ -9,6 +9,7 @@ import { Observable, tap, map, throwError } from 'rxjs';
 export class AuthService {
     private apiUrl = 'http://localhost:3000/api/oauth';
     private accessToken: string | null = null;
+    private refresh$: Observable<void> | null = null;
 
     constructor(private http: HttpClient, private router: Router) {}
 
@@ -25,7 +26,6 @@ export class AuthService {
 
     handleGoogleCallback(token: string, refresh: string, userId: any): void {
         this.accessToken = token || null;
-        this.router.navigate(['/login']);
     }
 
     getToken() : string | null {
@@ -33,10 +33,17 @@ export class AuthService {
     }
 
     refreshAccessToken(): Observable<void> {
-        return this.http.post<{ token: string }> (`${this.apiUrl}/refresh`, {}, {withCredentials: true}).pipe(
+        if (this.refresh$) return this.refresh$;
+        
+        this.refresh$ = this.http.post<{ token: string }> (
+            `${this.apiUrl}/refresh`, {}, { withCredentials: true }
+        ).pipe(
             tap(res => { this.accessToken = res.token; }),
-            map(() => void 0)
+            map(() => void 0),
+            shareReplay(1),
+            finalize(() => { this.refresh$ = null; })
         );
+        return this.refresh$;
     }
 
     logout(): void {

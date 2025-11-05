@@ -1,0 +1,28 @@
+:host {
+    display: block;
+    margin: 0;
+    padding: 0;
+}
+
+.home-layout {
+    min-height: 100dvh;
+    margin: 0;
+    padding: 0;
+}
+
+.sidebar-fixed {
+    position: fixed;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 260px;
+    overflow: hidden;
+    z-index: 100;
+}
+
+.content {
+    margin-left: 260px;
+    height: 100dvh;
+    overflow: auto;
+    padding: 16px;
+}
