@@ -1,0 +1,164 @@
+.searchbar-container {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.search-section {
+  flex: 1 1 auto;
+  max-width: 50%;
+  width: 100%;
+}
+
+.search-input-group {
+  display: flex;
+  align-items: center;
+  background: #ffffff;
+  border: 2px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 0.5rem 1.5rem;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.search-input-group:hover {
+  border-color: #d1d5db;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+}
+
+.search-input-group:focus-within {
+  background: white;
+  border-color: #3b82f6;
+  box-shadow: 
+    0 0 0 4px rgba(59, 130, 246, 0.1),
+    0 4px 12px rgba(59, 130, 246, 0.15);
+}
+
+.search-icon {
+  width: 24px;
+  height: 24px;
+  color: #9ca3af;
+  margin-right: 1rem;
+  flex-shrink: 0;
+  transition: color 0.2s;
+}
+
+.search-input-group:focus-within .search-icon {
+  color: #3b82f6;
+}
+
+.search-input {
+  flex: 1;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-size: 1rem;
+  font-weight: 500;
+  color: #1f2937;
+  padding: 0.5rem 0;
+}
+
+.search-input::placeholder {
+  color: #9ca3af;
+  font-weight: 400;
+}
+
+.search-input:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.clear-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0.375rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #6b7280;
+  border-radius: 6px;
+  transition: all 0.2s;
+  flex-shrink: 0;
+}
+
+.clear-btn:hover {
+  background: #f3f4f6;
+  color: #374151;
+}
+
+.clear-btn:active {
+  transform: scale(0.95);
+}
+
+.clear-btn svg {
+  width: 20px;
+  height: 20px;
+}
+
+.filters-section {
+  display: none;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.filters-section:not(:empty) {
+  display: flex;
+}
+
+@media (max-width: 1200px) {
+  .search-section {
+    max-width: 100%;
+  }
+}
+
+@media (max-width: 992px) {
+  .search-section {
+    max-width: 100%;
+  }
+
+  .search-input-group {
+    padding: 0.75rem 1.25rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .search-section {
+    max-width: 100%;
+  }
+
+  .search-input-group {
+    padding: 0.7rem 1.1rem;
+  }
+
+  .search-icon {
+    width: 22px;
+    height: 22px;
+  }
+
+  .search-input {
+    font-size: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .search-input-group {
+    padding: 0.65rem 1rem;
+  }
+
+  .search-input {
+    font-size: 0.95rem;
+  }
+
+  .search-icon {
+    width: 20px;
+    height: 20px;
+    margin-right: 0.75rem;
+  }
+
+  .clear-btn svg {
+    width: 18px;
+    height: 18px;
+  }
+}

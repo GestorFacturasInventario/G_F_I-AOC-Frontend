@@ -17,7 +17,14 @@ export const routes: Routes = [
         children: [
             { path: '', redirectTo: 'home', pathMatch: 'full' },
             { path: 'home', component: PlaceholderComponent, data: { title: 'Inicio' } },
-            { path: 'cotizaciones', component: PlaceholderComponent, data: { title: 'Cotizaciones' } },
+            {
+                path: 'usuarios',
+                loadComponent: () => import('./pages/usuarios/usuarios').then(m => m.UsuariosComponent)
+            },
+            { 
+                path: 'cotizaciones',
+                loadComponent: () => import('./pages/cotizaciones/cotizaciones').then(m => m.CotizacionesComponent) 
+            },
             { path: 'ordenes', component: PlaceholderComponent, data: { title: 'Ordenes' } },
             { path: 'facturas', component: PlaceholderComponent, data: { title: 'Facturas' } },
             { path: 'inventario', component: PlaceholderComponent, data: { title: 'Inventario' } },

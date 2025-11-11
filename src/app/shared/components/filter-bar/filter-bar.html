@@ -1,0 +1,59 @@
+<div class="filter-bar">
+    <!-- Filtro de Mes -->
+    <div class="filter-group" *ngIf="config.showDateFilter">
+      <label>Mes</label>
+      <select 
+        [(ngModel)]="mesSeleccionado" 
+        (change)="onFilterChange()"
+        class="filter-select"
+      >
+        <option [value]="undefined">Todos</option>
+        <option *ngFor="let mes of meses" [value]="mes.valor">
+          {{ mes.nombre }}
+        </option>
+      </select>
+    </div>
+  
+    <!-- Filtro de Año -->
+    <div class="filter-group" *ngIf="config.showDateFilter">
+      <label>Año</label>
+      <select 
+        [(ngModel)]="anioSeleccionado" 
+        (change)="onFilterChange()"
+        class="filter-select"
+      >
+        <option [value]="undefined">Todos</option>
+        <option *ngFor="let anio of anios" [value]="anio">
+          {{ anio }}
+        </option>
+      </select>
+    </div>
+  
+    <!-- Filtro de Estado -->
+    <div class="filter-group" *ngIf="config.showStatusFilter">
+      <label>Estado</label>
+      <select 
+        [(ngModel)]="estadoSeleccionado" 
+        (change)="onFilterChange()"
+        class="filter-select"
+      >
+        <option [value]="undefined">Todos</option>
+        <option *ngFor="let estado of config.statusOptions" [value]="estado">
+          {{ estado }}
+        </option>
+      </select>
+    </div>
+  
+    <!-- Botón limpiar filtros -->
+    <button 
+      *ngIf="hasActiveFilters"
+      class="btn-clear"
+      (click)="onClearFilters()"
+      title="Limpiar filtros"
+    >
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+      </svg>
+      Limpiar
+    </button>
+  </div>

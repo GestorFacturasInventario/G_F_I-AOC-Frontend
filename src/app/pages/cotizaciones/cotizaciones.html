@@ -1,0 +1,54 @@
+<div class="cotizaciones-page">
+  <!-- Filtros integrados en el top-bar -->
+  <div topBarFilters>
+    <app-filter-bar 
+      [config]="filterConfig"
+      (filtersChanged)="onFiltersChanged($event)"
+      (clearFilters)="onClearFilters()">
+    </app-filter-bar>
+  </div>
+
+  <!-- Contenido principal -->
+  <div class="cotizaciones-container">
+    <div class="page-header">
+      <h2>Gestión de Cotizaciones</h2>
+    </div>
+
+    <!-- Mensaje de notificación -->
+    <div *ngIf="mensaje" class="mensaje" 
+         [ngClass]="{'mensaje-success': tipoMensaje === 'success', 'mensaje-error': tipoMensaje === 'error'}">
+      {{ mensaje }}
+    </div>
+
+    <!-- Lista de cotizaciones -->
+    <div class="cotizaciones-lista">
+      <div *ngIf="cargando" class="cargando">
+        <div class="spinner"></div>
+        Cargando cotizaciones...
+      </div>
+
+      <div *ngIf="!cargando && cotizaciones.length === 0" class="sin-datos">
+        <p>No se encontraron cotizaciones</p>
+      </div>
+
+      <div class="cotizaciones-grid" *ngIf="!cargando && cotizaciones.length > 0">
+        <div *ngFor="let cotizacion of cotizaciones" class="cotizacion-card">
+          <div class="cotizacion-info">
+            <div class="cotizacion-numero">
+              <strong>#{{ cotizacion.numero_cot }}</strong>
+            </div>
+            <div class="cotizacion-cliente">{{ cotizacion.cliente }}</div>
+            <div class="cotizacion-costo">
+              {{ cotizacion.costo | currency: cotizacion.moneda }}
+            </div>
+            <div class="cotizacion-estado">
+              <span class="badge" [ngClass]="'badge-' + cotizacion.estado_cot.toLowerCase()">
+                {{ cotizacion.estado_cot }}
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
