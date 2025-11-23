@@ -41,7 +41,7 @@ export class AuthService {
             tap(res => { this.accessToken = res.token; }),
             map(() => void 0),
             shareReplay(1),
-            finalize(() => { this.refresh$ = null; })
+        finalize(() => { this.refresh$ = null; })
         );
         return this.refresh$;
     }

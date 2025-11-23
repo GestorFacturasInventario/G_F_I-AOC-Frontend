@@ -1,53 +1,429 @@
-<div class="cotizaciones-page">
-  <!-- Filtros integrados en el top-bar -->
-  <div topBarFilters>
-    <app-filter-bar 
-      [config]="filterConfig"
-      (filtersChanged)="onFiltersChanged($event)"
-      (clearFilters)="onClearFilters()">
-    </app-filter-bar>
+<div class="cotizaciones-container">
+  <h2>Gestión de Cotizaciones</h2>
+
+  <!-- Mensaje de notificación -->
+  <div *ngIf="mensaje" class="mensaje" [ngClass]="{'mensaje-success': tipoMensaje === 'success', 'mensaje-error': tipoMensaje === 'error'}">
+    {{ mensaje }}
   </div>
 
-  <!-- Contenido principal -->
-  <div class="cotizaciones-container">
-    <div class="page-header">
-      <h2>Gestión de Cotizaciones</h2>
+  <!-- Layout de 2 columnas -->
+  <div class="content-wrapper">
+    <!-- Formulario compacto a la izquierda -->
+    <div class="formulario-card">
+      <h3>{{ cotizacionSeleccionada ? 'Editar Cotización' : 'Nueva Cotización' }}</h3>
+      
+      <form (ngSubmit)="guardarCotizacion()" class="formulario">
+        <div class="form-group">
+          <label for="numero_cot">Número</label>
+          <input 
+            type="text" 
+            id="numero_cot" 
+            [(ngModel)]="numero_cot" 
+            name="numero_cot"
+            placeholder="COT-2024-001"
+            [disabled]="cargando || cotizacionSeleccionada !== null"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="cliente">Cliente</label>
+          <input 
+            type="text" 
+            id="cliente" 
+            [(ngModel)]="cliente" 
+            name="cliente"
+            placeholder="Nombre del cliente"
+            [disabled]="cargando"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="descripcion_cot">Descripción</label>
+          <textarea 
+            id="descripcion_cot" 
+            [(ngModel)]="descripcion_cot" 
+            name="descripcion_cot"
+            placeholder="Descripción breve"
+            [disabled]="cargando"
+          ></textarea>
+        </div>
+
+        <div class="form-group">
+          <label for="archivo_cot">Archivo</label>
+          <input 
+            type="text" 
+            id="archivo_cot" 
+            [(ngModel)]="archivo_cot" 
+            name="archivo_cot"
+            placeholder="Nombre/ruta del archivo"
+            [disabled]="cargando"
+          />
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="costo">Costo</label>
+            <input 
+              type="number" 
+              id="costo" 
+              [(ngModel)]="costo" 
+              name="costo"
+              placeholder="0.00"
+              step="0.01"
+              min="0"
+              [disabled]="cargando"
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="moneda">Moneda</label>
+            <select 
+              id="moneda" 
+              [(ngModel)]="moneda" 
+              name="moneda"
+              [disabled]="cargando"
+            >
+              <option value="MXN">MXN</option>
+              <option value="USD">USD</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button 
+            type="submit" 
+            class="btn btn-primary"
+            [disabled]="cargando"
+          >
+            {{ textoBoton }}
+          </button>
+          
+          <button 
+            type="button" 
+            class="btn btn-secondary"
+            (click)="limpiarFormulario()"
+            [disabled]="cargando"
+            *ngIf="cotizacionSeleccionada"
+          >
+            Cancelar
+          </button>
+        </div>
+      </form>
     </div>
 
-    <!-- Mensaje de notificación -->
-    <div *ngIf="mensaje" class="mensaje" 
-         [ngClass]="{'mensaje-success': tipoMensaje === 'success', 'mensaje-error': tipoMensaje === 'error'}">
-      {{ mensaje }}
-    </div>
-
-    <!-- Lista de cotizaciones -->
+    <!-- Lista de cotizaciones a la derecha -->
     <div class="cotizaciones-lista">
-      <div *ngIf="cargando" class="cargando">
+      <!-- Panel de Filtros -->
+      <div class="filtros-panel">
+        <div class="filtros-header">
+          <button 
+            type="button" 
+            class="btn btn-filtro"
+            (click)="toggleFiltros()"
+            [ngClass]="{'activo': mostrarFiltros || filtrosActivos}"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
+            </svg>
+            Filtros
+            <span *ngIf="filtrosActivos" class="badge-filtros">●</span>
+          </button>
+          
+          <button 
+            type="button" 
+            class="btn btn-limpiar"
+            (click)="limpiarFiltros()"
+            *ngIf="filtrosActivos"
+            title="Limpiar filtros"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+
+        <div class="filtros-contenido" *ngIf="mostrarFiltros">
+          <div class="filtros-grid">
+            <!-- Filtro Estado -->
+            <div class="filtro-item">
+              <label for="filtroEstado">Estado</label>
+              <select 
+                id="filtroEstado" 
+                [(ngModel)]="filtroEstado" 
+                (ngModelChange)="aplicarFiltros()"
+                name="filtroEstado"
+              >
+                <option value="">Todos</option>
+                <option value="en proceso">En Proceso</option>
+                <option value="rechazado">Rechazado</option>
+                <option value="aprobado">Aprobado</option>
+              </select>
+            </div>
+
+            <!-- Filtro Año -->
+            <div class="filtro-item">
+              <label for="filtroAnio">Año</label>
+              <select 
+                id="filtroAnio" 
+                [(ngModel)]="filtroAnio" 
+                (ngModelChange)="aplicarFiltros()"
+                name="filtroAnio"
+              >
+                <option [ngValue]="null">Todos</option>
+                <option *ngFor="let anio of aniosDisponibles" [ngValue]="anio">{{ anio }}</option>
+              </select>
+            </div>
+
+            <!-- Filtro Mes -->
+            <div class="filtro-item">
+              <label for="filtroMes">Mes</label>
+              <select 
+                id="filtroMes" 
+                [(ngModel)]="filtroMes" 
+                (ngModelChange)="aplicarFiltros()"
+                name="filtroMes"
+                [disabled]="!filtroAnio"
+              >
+                <option [ngValue]="null">Todos</option>
+                <option *ngFor="let mes of meses" [ngValue]="mes.valor">{{ mes.nombre }}</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <h3>
+        Lista de Cotizaciones 
+        <span class="badge">{{ cotizacionesFiltradas.length }}</span>
+        <span *ngIf="cotizacionesFiltradas.length !== cotizaciones.length" class="filtrado-info">
+          (filtradas de {{ cotizaciones.length }})
+        </span>
+      </h3>
+      
+      <div *ngIf="cargando && cotizaciones.length === 0" class="cargando">
         <div class="spinner"></div>
         Cargando cotizaciones...
       </div>
 
       <div *ngIf="!cargando && cotizaciones.length === 0" class="sin-datos">
-        <p>No se encontraron cotizaciones</p>
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+        </svg>
+        <p>No hay cotizaciones</p>
+        <small>Agrega tu primera cotización</small>
       </div>
 
-      <div class="cotizaciones-grid" *ngIf="!cargando && cotizaciones.length > 0">
-        <div *ngFor="let cotizacion of cotizaciones" class="cotizacion-card">
+      <!-- Mensaje cuando hay cotizaciones pero no hay resultados de búsqueda -->
+      <div *ngIf="!cargando && cotizaciones.length > 0 && cotizacionesFiltradas.length === 0" class="sin-datos">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+        </svg>
+        <p>No se encontraron cotizaciones</p>
+        <small>Intenta con otro término o ajusta los filtros</small>
+      </div>
+
+      <div class="cotizaciones-grid" *ngIf="cotizacionesFiltradas.length > 0">
+        <div 
+          *ngFor="let cotizacion of cotizacionesFiltradas" 
+          class="cotizacion-card"
+          [ngClass]="{'cotizacion-seleccionada': cotizacionSeleccionada?._id === cotizacion._id}"
+          (click)="seleccionarCotizacion(cotizacion)"
+        >
           <div class="cotizacion-info">
             <div class="cotizacion-numero">
-              <strong>#{{ cotizacion.numero_cot }}</strong>
-            </div>
-            <div class="cotizacion-cliente">{{ cotizacion.cliente }}</div>
-            <div class="cotizacion-costo">
-              {{ cotizacion.costo | currency: cotizacion.moneda }}
-            </div>
-            <div class="cotizacion-estado">
-              <span class="badge" [ngClass]="'badge-' + cotizacion.estado_cot.toLowerCase()">
+              <strong>{{ cotizacion.numero_cot }}</strong>
+              <span 
+                class="badge badge-estado" 
+                [ngClass]="{
+                  'badge-en-proceso': cotizacion.estado_cot === 'en proceso',
+                  'badge-rechazado': cotizacion.estado_cot === 'rechazado',
+                  'badge-aprobado': cotizacion.estado_cot === 'aprobado',
+                  'badge-clickeable': puedeEditarEstado(cotizacion)
+                }"
+                [title]="puedeEditarEstado(cotizacion) ? 'Click para cambiar estado' : 'Estado final - no se puede cambiar'"
+                (click)="puedeEditarEstado(cotizacion) ? cambiarEstadoCotizacion(cotizacion, $event) : null"
+              >
                 {{ cotizacion.estado_cot }}
+                <svg 
+                  *ngIf="puedeEditarEstado(cotizacion)" 
+                  xmlns="http://www.w3.org/2000/svg" 
+                  fill="none" 
+                  viewBox="0 0 24 24" 
+                  stroke="currentColor"
+                  class="icono-cambio"
+                >
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
+                </svg>
               </span>
             </div>
+            <div class="cotizacion-cliente">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+              </svg>
+              {{ cotizacion.cliente }}
+            </div>
+            <div class="cotizacion-descripcion">
+              {{ cotizacion.descripcion_cot }}
+            </div>
+            <div class="cotizacion-costo">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              <strong>{{ cotizacion.costo | currency:cotizacion.moneda:'symbol':'1.2-2' }}</strong>
+            </div>
+            <div class="cotizacion-fecha" *ngIf="cotizacion.createdAt">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+              </svg>
+              {{ cotizacion.createdAt | date:'dd/MM/yyyy' }}
+            </div>
+          </div>
+          <div class="cotizacion-actions">
+            <button
+            *ngIf="puedeGenerarOrden(cotizacion)"
+            class="btn btn-success"
+            (click)="abrirFormularioOrden(cotizacion); $event.stopPropagation()"
+            [disabled]="cargando"
+            tittle="Generar Orden de Compra"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+              </svg>
+              Generar Orden
+            </button>
+
+            <span
+              *ngIf="cotizacion.estado_cot === 'aprobado'"
+              class="badge-tiene-orden"
+              tittle="Esta cotizacion ya tiene una orden generada"
+              >
+              <svg xmlns="http://www/w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+              </svg>
+              Orden generada
+            </span>
+
+            <button
+              class="btn btn-danger"
+              (click)="eliminarCotizacion(cotizacion); $event.stopPropagation()"
+              [disabled]="cargando"
+              tittle="Eliminar"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                </svg>
+                Eliminar
+            </button>
           </div>
         </div>
+      </div>
+    </div>
+  </div>
+  <div *ngIf="mostrarFormularioOrden" class="modal-overlay" (click)="cerrarFormularioOrden()">
+    <div class="modal-contenido" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3>Generar Orden de Compra</h3>
+        <button class="btn-close" (click)="cerrarFormularioOrden()">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+  
+      <div class="modal-body">
+        <p class="cotizacion-seleccionada-info">
+          Cotización: <strong>{{ cotizacionParaOrden?.numero_cot }}</strong> - {{ cotizacionParaOrden?.cliente }}
+        </p>
+  
+        <form (ngSubmit)="generarOrden()">
+          <div class="form-group">
+            <label for="referencia_ord">Referencia de Orden *</label>
+            <input 
+              type="text" 
+              id="referencia_ord" 
+              [(ngModel)]="ordenData.referencia_ord" 
+              name="referencia_ord"
+              placeholder="ORD-2024-001"
+              required
+            />
+          </div>
+  
+          <div class="form-group">
+            <label for="descripcion_ord">Descripción</label>
+            <textarea 
+              id="descripcion_ord" 
+              [(ngModel)]="ordenData.descripcion_ord" 
+              name="descripcion_ord"
+              placeholder="Descripción de la orden (opcional, usa la de cotización por defecto)"
+              rows="3"
+            ></textarea>
+          </div>
+  
+          <div class="form-group">
+            <label for="empleado">Empleado Responsable *</label>
+            <input 
+              type="text" 
+              id="empleado" 
+              [(ngModel)]="ordenData.empleado" 
+              name="empleado"
+              placeholder="Nombre del empleado"
+              required
+            />
+          </div>
+  
+          <div class="form-group">
+            <label for="archivo_ord">Archivo *</label>
+            <input 
+              type="text" 
+              id="archivo_ord" 
+              [(ngModel)]="ordenData.archivo_ord" 
+              name="archivo_ord"
+              placeholder="Nombre/ruta del archivo"
+              required
+            />
+          </div>
+  
+          <div class="form-row">
+            <div class="form-group">
+              <label for="fecha_limite">Fecha Límite *</label>
+              <input 
+                type="date" 
+                id="fecha_limite" 
+                [(ngModel)]="ordenData.fecha_limite" 
+                name="fecha_limite"
+                [min]="fechaMinima"
+                required
+              />
+            </div>
+  
+            <div class="form-group">
+              <label for="descuento">Descuento (%)</label>
+              <input 
+                type="number" 
+                id="descuento" 
+                [(ngModel)]="ordenData.descuento" 
+                name="descuento"
+                placeholder="0"
+                min="0"
+                max="99"
+                step="0.01"
+              />
+            </div>
+          </div>
+  
+          <div class="info-costo">
+            <p>Total de Cotización: <strong>{{ cotizacionParaOrden?.costo | currency:cotizacionParaOrden?.moneda:'symbol':'1.2-2' }}</strong></p>
+          </div>
+  
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" (click)="cerrarFormularioOrden()">
+              Cancelar
+            </button>
+            <button type="submit" class="btn btn-primary" [disabled]="cargando">
+              {{ cargando ? 'Generando...' : 'Generar Orden' }}
+            </button>
+          </div>
+        </form>
       </div>
     </div>
   </div>

@@ -2,6 +2,7 @@
     display: block;
     margin: 0;
     padding: 0;
+    overflow-x: hidden;
   }
   
   .home-layout {
@@ -9,6 +10,8 @@
     margin: 0;
     padding: 0;
     display: flex;
+    overflow-x: hidden;
+    width: 100%;
   }
   
   .sidebar-fixed {
@@ -29,6 +32,9 @@
     flex-direction: column;
     min-height: 100dvh;
     transition: margin-left 0.3s ease;
+    overflow-x: hidden;
+    width: calc(100% - 260px);
+    max-width: calc(100vw - 260px);
   }
   
   .top-bar-fixed {
@@ -43,6 +49,7 @@
     align-items: center;
     justify-content: center;
     width: 100%;
+    max-width: 100%;
   }
 
   .top-bar-fixed app-searchbar {
@@ -53,9 +60,11 @@
   
   .content {
     flex: 1;
-    overflow: auto;
+    overflow-x: hidden;
+    overflow-y: auto;
     padding: 1.5rem;
     background: #f9fafb;
+    width: 100%;
   }
   
   /* Tablets */
@@ -66,6 +75,8 @@
     
     .main-container {
       margin-left: 220px;
+      width: calc(100% - 220px);
+      max-width: calc(100vw - 220px);
     }
     
     .top-bar-fixed {
@@ -86,6 +97,8 @@
     
     .main-container {
       margin-left: 70px;
+      width: calc(100% - 70px);
+      max-width: calc(100vw - 70px);
     }
   
     .top-bar-fixed {
@@ -105,6 +118,8 @@
     
     .main-container {
       margin-left: 60px;
+      width: calc(100% - 60px);
+      max-width: calc(100vw - 60px);
     }
     
     .top-bar-fixed {
@@ -114,5 +129,12 @@
     
     .content {
       padding: 0.75rem;
+    }
+
+    /* Pantallas ultra grandes */
+    @media (min-width: 1920px) {
+      .main-container {
+        max-width: calc(100vw - 260px);
+      }
     }
   }

@@ -2,7 +2,7 @@ import { Component, OnInit, OnDestroy, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, NavigationEnd } from '@angular/router';
-import { SearchService } from '../../../services/serchbar.service';
+import { SearchService } from '../../services/serchbar.service';
 import { debounceTime, distinctUntilChanged, Subject } from 'rxjs';
 import { filter, takeUntil } from 'rxjs/operators';
 

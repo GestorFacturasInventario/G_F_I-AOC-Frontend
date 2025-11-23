@@ -1,1 +1,780 @@
+:host {
+    display: block;
+    padding: 0.1rem 2rem 2rem 2rem;
+  }
+  
+  .cotizaciones-container {
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+  
+  h2 {
+    margin-top: 0;
+    margin-bottom: 1.5rem;
+    color: #333;
+    font-size: 1.5rem;
+  }
+  
+  h3 {
+    margin-bottom: 1rem;
+    color: #555;
+    font-size: 1.3rem;
+  }
+  
+  /* Mensajes */
+  .mensaje {
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+    border-radius: 8px;
+    font-weight: 500;
+    animation: slideDown 0.3s ease;
+  }
+  
+  .mensaje-success {
+    background-color: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+  }
+  
+  .mensaje-error {
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+  }
+  
+  @keyframes slideDown {
+    from {
+      opacity: 0;
+      transform: translateY(-10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  /* Layout principal: Formulario a la izquierda, lista a la derecha */
+  .content-wrapper {
+    display: grid;
+    grid-template-columns: 380px 1fr;
+    gap: 1.5rem;
+    align-items: start;
+  }
+  
+  /* Formulario compacto */
+  .formulario-card {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    position: sticky;
+    top: 1rem;
+  }
+  
+  .formulario-card h3 {
+    font-size: 1.2rem;
+    margin-bottom: 1rem;
+  }
+  
+  .formulario {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+  
+  .form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem;
+  }
+  
+  .form-group {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .form-group label {
+    margin-bottom: 0.4rem;
+    font-weight: 600;
+    color: #555;
+    font-size: 0.85rem;
+  }
+  
+  .form-group input,
+  .form-group textarea,
+  .form-group select {
+    padding: 0.6rem;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    transition: border-color 0.2s;
+  }
+  
+  .form-group textarea {
+    resize: vertical;
+    font-family: inherit;
+    min-height: 70px;
+  }
+  
+  .form-group input:focus,
+  .form-group textarea:focus,
+  .form-group select:focus {
+    outline: none;
+    border-color: #007bff;
+    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+  }
+  
+  .form-group input:disabled,
+  .form-group textarea:disabled,
+  .form-group select:disabled {
+    background-color: #f5f5f5;
+    cursor: not-allowed;
+  }
+  
+  .form-actions {
+    display: flex;
+    gap: 0.75rem;
+    margin-top: 0.5rem;
+  }
+  
+  /* Botones */
+  .btn {
+    padding: 0.65rem 1.2rem;
+    border: none;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  
+  .btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+  
+  .btn-primary {
+    background-color: #007bff;
+    color: white;
+    flex: 1;
+  }
+  
+  .btn-primary:hover:not(:disabled) {
+    background-color: #0056b3;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0, 123, 255, 0.3);
+  }
+  
+  .btn-secondary {
+    background-color: #6c757d;
+    color: white;
+    flex: 1;
+  }
+  
+  .btn-secondary:hover:not(:disabled) {
+    background-color: #5a6268;
+  }
+  
+  .btn-danger {
+    background-color: #dc3545;
+    color: white;
+    padding: 0.4rem 0.8rem;
+    font-size: 0.8rem;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+  
+  .btn-danger:hover:not(:disabled) {
+    background-color: #c82333;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(220, 53, 69, 0.3);
+  }
+  
+  .btn-danger svg {
+    width: 16px;
+    height: 16px;
+  }
+  
+  /* Lista de cotizaciones */
+  .cotizaciones-lista {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    min-height: 500px;
+  }
+  
+  .cargando,
+  .sin-datos {
+    text-align: center;
+    padding: 2rem;
+    color: #666;
+    font-size: 1rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75rem;
+  }
+  
+  .spinner {
+    border: 4px solid #f3f4f6;
+    border-top: 4px solid #3b82f6;
+    border-radius: 50%;
+    width: 35px;
+    height: 35px;
+    animation: spin 1s linear infinite;
+  }
+  
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+  
+  .sin-datos svg {
+    width: 48px;
+    height: 48px;
+    color: #d1d5db;
+  }
+  
+  .sin-datos p {
+    font-size: 1rem;
+    font-weight: 600;
+    margin: 0;
+  }
+  
+  .sin-datos small {
+    color: #9ca3af;
+    font-size: 0.85rem;
+  }
+  
+  .cotizaciones-grid {
+    display: grid;
+    gap: 0.75rem;
+    margin-top: 1rem;
+  }
+  
+  .cotizacion-card {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    border: 2px solid #e9ecef;
+    border-radius: 8px;
+    transition: all 0.2s;
+    cursor: pointer;
+    background: #fafafa;
+  }
+  
+  .cotizacion-card:hover {
+    border-color: #007bff;
+    box-shadow: 0 4px 12px rgba(0, 123, 255, 0.15);
+    transform: translateY(-2px);
+  }
+  
+  .cotizacion-seleccionada {
+    border-color: #007bff;
+    background: #e7f3ff;
+  }
+  
+  .cotizacion-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+  }
+  
+  .cotizacion-numero {
+    font-size: 1rem;
+    margin-bottom: 0.2rem;
+    color: #333;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+  
+  .cotizacion-cliente,
+  .cotizacion-costo,
+  .cotizacion-fecha {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    color: #666;
+    font-size: 0.85rem;
+  }
+  
+  .cotizacion-cliente svg,
+  .cotizacion-costo svg,
+  .cotizacion-fecha svg {
+    width: 14px;
+    height: 14px;
+    flex-shrink: 0;
+    color: #9ca3af;
+  }
+  
+  .cotizacion-descripcion {
+    color: #777;
+    font-size: 0.8rem;
+    font-style: italic;
+    margin-top: 0.2rem;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  
+  .cotizacion-fecha {
+    color: #999;
+    font-size: 0.75rem;
+  }
+  
+  /* Badges */
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: #3b82f6;
+    color: white;
+    padding: 0.2rem 0.6rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    margin-left: 0.5rem;
+  }
+  
+  .filtrado-info {
+    color: #6b7280;
+    font-size: 0.85rem;
+    font-weight: normal;
+    margin-left: 0.25rem;
+  }
+  
+  .badge-estado {
+    font-size: 0.7rem;
+    padding: 0.15rem 0.5rem;
+    text-transform: capitalize;
+    margin-left: 0;
+  }
+  
+  .badge-en.proceso {
+    background-color: #fbbf24;
+    color: #78350f;
+  }
+  
+  .badge-aprobado {
+    background-color: #10b981;
+    color: white;
+  }
+  
+  .badge-rechazado {
+    background-color: #ef4444;
+    color: white;
+  }
+  
+  /* Responsive */
+  @media (max-width: 1024px) {
+    .content-wrapper {
+      grid-template-columns: 1fr;
+    }
+  
+    .formulario-card {
+      position: static;
+    }
+  }
+  
+  @media (max-width: 768px) {
+    :host {
+      padding: 1rem;
+    }
+  
+    .form-row {
+      grid-template-columns: 1fr;
+    }
+  
+    .form-actions {
+      flex-direction: column;
+    }
+  
+    .cotizacion-card {
+      flex-direction: column;
+      gap: 0.75rem;
+      align-items: stretch;
+    }
+  
+    .cotizacion-numero {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+}         
 
+/* Estilos para el panel de filtros */
+.filtros-panel {
+  background: white;
+  border-radius: 8px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.filtros-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.btn-filtro {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background: #f3f4f6;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: all 0.2s;
+  position: relative;
+}
+
+.btn-filtro:hover {
+  background: #e5e7eb;
+}
+
+.btn-filtro.activo {
+  background: #3b82f6;
+  color: white;
+  border-color: #3b82f6;
+}
+
+.btn-filtro svg {
+  width: 18px;
+  height: 18px;
+}
+
+.badge-filtros {
+  color: #ef4444;
+  font-size: 1.2rem;
+  line-height: 1;
+  margin-left: 0.25rem;
+}
+
+.btn-filtro.activo .badge-filtros {
+  color: #fef2f2;
+}
+
+.btn-limpiar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem;
+  background: #fee2e2;
+  border: 1px solid #fecaca;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-limpiar:hover {
+  background: #fecaca;
+}
+
+.btn-limpiar svg {
+  width: 18px;
+  height: 18px;
+  color: #ef4444;
+}
+
+.filtros-contenido {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid #e5e7eb;
+  animation: slideDown 0.2s ease-out;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.filtros-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 1rem;
+}
+
+.filtro-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.filtro-item label {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: #374151;
+}
+
+.filtro-item select {
+  padding: 0.5rem;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  background: white;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.filtro-item select:hover:not(:disabled) {
+  border-color: #3b82f6;
+}
+
+.filtro-item select:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.filtro-item select:disabled {
+  background: #f3f4f6;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+/* Estilos para badges de estado */
+.badge-estado {
+  font-size: 0.75rem;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  font-weight: 500;
+  text-transform: capitalize;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  transition: all 0.2s;
+}
+
+.badge-clickeable {
+  cursor: pointer;
+  user-select: none;
+}
+
+.badge-clickeable:hover {
+  transform: scale(1.05);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.badge-clickeable:active {
+  transform: scale(0.98);
+}
+
+.icono-cambio {
+  width: 14px;
+  height: 14px;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+/* Estilos específicos por estado */
+.badge-en-proceso {
+  background: #dbeafe;
+  color: #1e40af;
+}
+
+.badge-en-proceso.badge-clickeable:hover {
+  background: #bfdbfe;
+}
+
+.badge-rechazado {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.badge-rechazado.badge-clickeable:hover {
+  background: #fecaca;
+}
+
+.badge-aprobado {
+  background: #d1fae5;
+  color: #065f46;
+  cursor: not-allowed;
+}
+
+/* Responsividad */
+@media (max-width: 768px) {
+  .filtros-grid {
+    grid-template-columns: 1fr;
+  }
+}
+/* Estilos para las acciones de la cotizacion */
+.cotizacion-actions {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid #e5e7eb;
+}
+
+.btn-success {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: white;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.2s;
+  box-shadow: 0 2px 4px rgba(16, 185, 129, 0.2);
+}
+
+.btn-success:hover:not(:disabled) {
+  background: linear-gradient(135deg, #059669 0%, #047857 100%);
+  box-shadow: 0 4px 8px rgba(16, 185, 129, 0.3);
+  transform: translateY(-1px);
+}
+
+.btn-success svg {
+  width: 18px;
+  height: 18px;
+}
+
+.badge-tiene-orden {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background: #d1fae5;
+  color: #065f46;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.badge-tiene-orden svg {
+  width: 18px;
+  height: 18px;
+}
+
+/* Modal para formulario de orden */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(2px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  animation: fadeIn 0.2s ease-out;
+}
+
+.modal-contenido {
+  background: white;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 600px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3);
+  animation: slideIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem;
+  border-bottom: 2px solid #e5e7eb;
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+}
+
+.modal-header h3 {
+  margin: 0;
+  font-size: 1.375rem;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.btn-close {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: 6px;
+  transition: all 0.2s;
+}
+
+.btn-close:hover {
+  background: #e5e7eb;
+}
+
+.btn-close svg {
+  width: 20px;
+  height: 20px;
+  color: #64748b;
+}
+
+.modal-body {
+  padding: 1.5rem;
+}
+
+.cotizacion-seleccionada-info {
+  padding: 1rem;
+  background: #dbeafe;
+  border-left: 4px solid #2563eb;
+  border-radius: 6px;
+  margin-bottom: 1.5rem;
+  color: #1e40af;
+}
+
+.cotizacion-seleccionada-info strong {
+  color: #1e3a8a;
+}
+
+.info-costo {
+  padding: 1rem;
+  background: #f0fdf4;
+  border-radius: 6px;
+  margin-top: 1rem;
+  text-align: right;
+}
+
+.info-costo p {
+  margin: 0;
+  color: #166534;
+  font-size: 1.1rem;
+}
+
+.info-costo strong {
+  color: #15803d;
+  font-size: 1.25rem;
+}
+
+.modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  padding-top: 1.5rem;
+}

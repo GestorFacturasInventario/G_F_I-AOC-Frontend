@@ -1,11 +1,12 @@
 import { Component, signal } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { AuthService } from './services/auth.service';
+import { ConfirmDialogComponent } from './shared/confirm-dialog/confirm-dialog';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet],
+  imports: [RouterOutlet, ConfirmDialogComponent],
   templateUrl: './app.html',
   styleUrl: './app.css'
 })

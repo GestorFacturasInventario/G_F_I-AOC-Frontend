@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-import { SidebarComponent } from '../../shared/components/sidebar/sidebar';
-import { SearchbarComponent } from '../../shared/components/searchbar/searchbar';
+import { SidebarComponent } from '../../shared/sidebar/sidebar';
+import { SearchbarComponent } from '../../shared/searchbar/searchbar';
 
 @Component({
   selector: 'app-home-layout',

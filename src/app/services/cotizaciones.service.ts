@@ -57,7 +57,13 @@ export class CotizacionesService {
   }
 
   actualizarCotizacion(id: string, cotizacion: any): Observable<Cotizacion> {
-    return this.http.patch<Cotizacion>(`${this.apiUrl}/update/${id}`, cotizacion);
+    return this.http.put<Cotizacion>(`${this.apiUrl}/update/${id}`, cotizacion);
+  }
+
+  cambiarEstado(id: string, nuevoEstado: string): Observable<any> {
+    return this.http.patch<Cotizacion>(`${this.apiUrl}/change/status/${id}`, {
+      estado_cot: nuevoEstado
+    });
   }
 
   eliminarCotizacion(id: string): Observable<any> {
