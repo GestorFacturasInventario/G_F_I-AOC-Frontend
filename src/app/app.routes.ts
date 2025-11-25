@@ -18,14 +18,17 @@ export const routes: Routes = [
             { path: '', redirectTo: 'home', pathMatch: 'full' },
             { path: 'home', component: PlaceholderComponent, data: { title: 'Inicio' } },
             {
-                path: 'usuarios',
+                path: 'Usuarios',
                 loadComponent: () => import('./pages/usuarios/usuarios').then(m => m.UsuariosComponent)
             },
             { 
-                path: 'cotizaciones',
+                path: 'Cotizaciones',
                 loadComponent: () => import('./pages/cotizaciones/cotizaciones').then(m => m.CotizacionesComponent) 
             },
-            { path: 'ordenes', component: PlaceholderComponent, data: { title: 'Ordenes' } },
+            { 
+                path: 'Ordenes',
+                loadComponent: () => import('./pages/ordenes/ordenes').then(m => m.OrdenesComponent)
+            },
             { path: 'facturas', component: PlaceholderComponent, data: { title: 'Facturas' } },
             { path: 'inventario', component: PlaceholderComponent, data: { title: 'Inventario' } },
         ],

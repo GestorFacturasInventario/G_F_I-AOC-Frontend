@@ -122,11 +122,9 @@ export class CotizacionesComponent implements OnInit {
   }
 
   aplicarFiltros(queryBusqueda?: string): void {
-    // Si hay filtros avanzados (estado, año o mes) usar el endpoint de filtros
     if (this.filtroEstado || this.filtroAnio || this.filtroMes) {
       this.aplicarFiltrosServidor(queryBusqueda);
     } else {
-      // Si solo hay búsqueda de texto, usar filtrado local
       this.filtrarCotizacionesLocal(queryBusqueda || '');
     }
   }
