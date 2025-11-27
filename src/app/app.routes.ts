@@ -33,7 +33,10 @@ export const routes: Routes = [
                 path: 'Facturas',
                 loadComponent: () => import('./pages/facturas/facturas').then(m => m.FacturasComponent)
             },
-            { path: 'inventario', component: PlaceholderComponent, data: { title: 'Inventario' } },
+            {
+                path: 'Inventario',
+                loadComponent: () => import('./pages/inventario/inventario').then(m => m.InventarioComponent)
+            },
         ],
     },
     { path: '**', redirectTo: '' },
