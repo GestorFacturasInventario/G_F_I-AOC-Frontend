@@ -1,0 +1,196 @@
+<div class="facturas-container">
+    <h2>Facturas</h2>
+
+    <!-- Mensajes -->
+    <div *ngIf="mensaje" class="mensaje" [class.success]="tipoMensaje === 'success'" 
+         [class.error]="tipoMensaje === 'error'" [class.info]="tipoMensaje === 'info'">
+      {{ mensaje }}
+    </div>
+  
+    <!-- Panel de Filtros -->
+    <div class="filtros-panel">
+      <div class="filtros-header">
+        <button 
+          type="button" 
+          class="btn btn-filtro"
+          (click)="toggleFiltros()"
+          [ngClass]="{'activo': mostrarFiltros || filtrosActivos}"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
+          </svg>
+          Filtros
+          <span *ngIf="filtrosActivos" class="badge-filtros">●</span>
+        </button>
+        
+        <button 
+          type="button" 
+          class="btn btn-limpiar"
+          (click)="limpiarFiltros()"
+          *ngIf="filtrosActivos"
+          title="Limpiar filtros"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+
+      <div class="filtros-contenido" *ngIf="mostrarFiltros">
+        <div class="filtros-grid">
+          <div class="filtro-item">
+            <label for="filtroAnio">Año</label>
+            <select 
+              id="filtroAnio" 
+              [(ngModel)]="filtroAnio" 
+              (ngModelChange)="aplicarFiltros()"
+              name="filtroAnio"
+            >
+              <option [ngValue]="null">Todos</option>
+              <option *ngFor="let anio of aniosDisponibles" [value]="anio">{{ anio }}</option>
+            </select>
+          </div>
+  
+          <div class="filtro-item">
+            <label for="filtroMes">Mes</label>
+            <select 
+              id="filtroMes" 
+              [(ngModel)]="filtroMes" 
+              (ngModelChange)="aplicarFiltros()" 
+              name="filtroMes"
+              [disabled]="!filtroAnio"
+            >
+              <option value="">Todos</option>
+              <option *ngFor="let mes of meses" [value]="mes.valor">{{ mes.nombre }}</option>
+            </select>
+          </div>
+        </div>
+      </div>
+    </div>
+  
+    <!-- Lista de Facturas -->
+    <div class="facturas-grid" *ngIf="!cargando && facturasFiltradas.length > 0">
+      <div class="factura-card" *ngFor="let factura of facturasFiltradas; trackBy: trackByFacturaId">
+        <!-- Header compacto -->
+        <div class="factura-header">
+          <strong class="factura-numero">{{ factura.numero_fac }}</strong>
+          <span class="factura-fecha">{{ formatearFecha(factura.createdAt) }}</span>
+        </div>
+  
+        <!-- Información con labels -->
+        <div class="factura-info">
+          <div class="info-item">
+            <span class="info-label">Orden:</span>
+            <span class="info-value">{{ factura.orden_id?.referencia_ord || 'N/A' }}</span>
+          </div>
+          
+          <div class="info-item">
+            <span class="info-label">Cliente:</span>
+            <span class="info-value">{{ factura.orden_id?.cotizacion_id?.cliente || 'N/A' }}</span>
+          </div>
+          
+          <div class="info-item">
+            <span class="info-label">Cotización:</span>
+            <span class="info-value">{{ factura.orden_id?.cotizacion_id?.numero_cot || 'N/A' }}</span>
+          </div>
+        </div>
+  
+        <!-- Concepto con label -->
+        <div class="factura-concepto-box">
+          <span class="concepto-label">Concepto:</span>
+          <p class="concepto-texto">{{ factura.concepto }}</p>
+        </div>
+  
+        <!-- Monto y acción -->
+        <div class="factura-footer">
+          <div class="monto-box">
+            <span class="monto-label">Pago:</span>
+            <span class="monto-valor">{{ factura.cantidad | currency:'MXN':'symbol':'1.2-2' }}</span>
+          </div>
+          <button class="btn-editar" (click)="abrirFormularioEdicion(factura)">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+            </svg>
+            Editar
+          </button>
+        </div>
+      </div>
+    </div>
+  
+    <!-- Estados de carga -->
+    <div class="mensaje-estado" *ngIf="cargando">
+      <div class="spinner"></div>
+      <p>Cargando facturas...</p>
+    </div>
+  
+    <div class="mensaje-estado" *ngIf="!cargando && facturas.length === 0">
+      <svg width="64" height="64" fill="currentColor" viewBox="0 0 16 16">
+        <path d="M14 14V4.5L9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2zM9.5 3A1.5 1.5 0 0 0 11 4.5h2V14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5.5v2z"/>
+      </svg>
+      <p>No hay facturas registradas</p>
+    </div>
+  
+    <div class="mensaje-estado" *ngIf="!cargando && facturas.length > 0 && facturasFiltradas.length === 0">
+      <svg width="64" height="64" fill="currentColor" viewBox="0 0 16 16">
+        <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/>
+      </svg>
+      <p>No se encontraron facturas con los filtros aplicados</p>
+    </div>
+  
+    <!-- Modal de Edición -->
+    <div class="modal-overlay" *ngIf="mostrarFormularioEdicion" (click)="cerrarFormularioEdicion()">
+      <div class="modal-content" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+          <h2>Editar Factura</h2>
+          <button class="btn-close" (click)="cerrarFormularioEdicion()">
+            <svg width="24" height="24" fill="currentColor" viewBox="0 0 16 16">
+              <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8 2.146 2.854Z"/>
+            </svg>
+          </button>
+        </div>
+  
+        <div class="modal-body">
+          <p class="factura-seleccionada-info">
+            Editando: <strong>{{ facturaSeleccionada?.numero_fac }}</strong>
+          </p>
+  
+          <form (ngSubmit)="actualizarFactura()">
+            <div class="form-group">
+              <label for="concepto">Concepto *</label>
+              <textarea 
+                id="concepto" 
+                [(ngModel)]="datosEdicion.concepto" 
+                name="concepto"
+                rows="3"
+                placeholder="Describe el concepto de la factura"
+                required
+              ></textarea>
+            </div>
+  
+            <div class="form-group">
+              <label for="cantidad">Cantidad *</label>
+              <input 
+                type="number" 
+                id="cantidad" 
+                [(ngModel)]="datosEdicion.cantidad" 
+                name="cantidad"
+                placeholder="0.00"
+                step="0.01"
+                min="0.01"
+                required
+              />
+            </div>
+  
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" (click)="cerrarFormularioEdicion()">
+                Cancelar
+              </button>
+              <button type="submit" class="btn btn-primary">
+                Actualizar Factura
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>

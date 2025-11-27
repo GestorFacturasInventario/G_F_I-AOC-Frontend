@@ -39,8 +39,6 @@ export class CotizacionesComponent implements OnInit {
   mensaje: string | null = null;
   tipoMensaje: 'success' | 'error' = 'success';
 
-  private searchSubscription?: Subscription;
-
   meses = [
     { valor: 1, nombre: 'Enero' },
     { valor: 2, nombre: 'Febrero' },
@@ -66,6 +64,8 @@ export class CotizacionesComponent implements OnInit {
     fecha_limite: '',
     descuento: 0
   };
+
+  private searchSubscription?: Subscription;
 
   constructor(
     private cotizacionesService: CotizacionesService,

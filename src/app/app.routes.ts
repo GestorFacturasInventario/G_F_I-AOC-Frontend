@@ -29,7 +29,10 @@ export const routes: Routes = [
                 path: 'Ordenes',
                 loadComponent: () => import('./pages/ordenes/ordenes').then(m => m.OrdenesComponent)
             },
-            { path: 'facturas', component: PlaceholderComponent, data: { title: 'Facturas' } },
+            {
+                path: 'Facturas',
+                loadComponent: () => import('./pages/facturas/facturas').then(m => m.FacturasComponent)
+            },
             { path: 'inventario', component: PlaceholderComponent, data: { title: 'Inventario' } },
         ],
     },

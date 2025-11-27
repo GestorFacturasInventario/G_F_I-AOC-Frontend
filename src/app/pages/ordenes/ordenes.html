@@ -122,27 +122,21 @@
   <!-- Grid de Órdenes -->
   <div class="ordenes-grid" *ngIf="ordenesFiltradas.length > 0">
     <div 
-      *ngFor="let orden of ordenesFiltradas" 
+      *ngFor="let orden of ordenesFiltradas; trackBy: trackByOrdenId" 
       class="orden-card"
-      [ngClass]="{
-        'orden-vencida': estaVencida(orden),
-        'orden-liquidada': orden.estado_ord === 'liquidado'
-      }"
+      [ngClass]="'orden-' + orden.estado_ord"
     >
-      <!-- Header de la orden -->
+      <!-- Header con referencia y estado -->
       <div class="orden-header">
-        <div class="orden-referencia">
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-          </svg>
+        <div class="orden-numero">
           <strong>{{ orden.referencia_ord }}</strong>
+          <span 
+            class="badge badge-estado" 
+            [ngClass]="'badge-' + orden.estado_ord"
+          >
+            {{ orden.estado_ord }}
+          </span>
         </div>
-        <span 
-          class="badge badge-estado" 
-          [ngClass]="'badge-' + orden.estado_ord"
-        >
-          {{ orden.estado_ord }}
-        </span>
       </div>
 
       <!-- Información de la cotización origen -->
@@ -150,18 +144,14 @@
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
         </svg>
-        <span class="cotizacion-info">
-          <strong>Cotización:</strong> {{ orden.cotizacion_id?.numero_cot }}
-          <span class="separador">|</span>
+        <span>
+          <strong>Cotización:</strong> {{ orden.cotizacion_id?.numero_cot }} • 
           <strong>Cliente:</strong> {{ orden.cotizacion_id?.cliente }}
         </span>
       </div>
 
       <!-- Descripción -->
       <div class="orden-descripcion">
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7" />
-        </svg>
         {{ orden.descripcion_ord }}
       </div>
 
@@ -170,56 +160,16 @@
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
         </svg>
-        <span><strong>Responsable:</strong> {{ orden.empleado }}</span>
+        <span>{{ orden.empleado }}</span>
       </div>
 
-      <!-- Footer con totales y fechas -->
-      <div class="orden-footer">
-        <div class="orden-montos">
-          <div class="monto-item" *ngIf="orden.descuento && orden.descuento > 0">
-            <span class="monto-label">Total Original:</span>
-            <span class="monto-valor monto-tachado">{{ orden.total | currency:'MXN':'symbol':'1.2-2' }}</span>
-          </div>
-          <div class="monto-item" *ngIf="orden.descuento && orden.descuento > 0">
-            <span class="monto-label">Descuento ({{ orden.descuento }}%):</span>
-            <span class="monto-valor monto-descuento">-{{ (orden.total * orden.descuento / 100) | currency:'MXN':'symbol':'1.2-2' }}</span>
-          </div>
-          <div class="monto-item monto-total">
-            <span class="monto-label">Total:</span>
-            <span class="monto-valor">{{ calcularTotalConDescuento(orden) | currency:'MXN':'symbol':'1.2-2' }}</span>
-          </div>
-        </div>
-
-        <div class="orden-fechas">
-          <div class="fecha-item">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-            </svg>
-            <span>Creada: {{ orden.createdAt | date:'dd/MM/yyyy' }}</span>
-          </div>
-          <div class="fecha-item fecha-limite" [ngClass]="{
-            'fecha-vencida': estaVencida(orden),
-            'fecha-proxima': !estaVencida(orden) && diasRestantes(orden) <= 7 && orden.estado_ord === 'pendiente'
-          }">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-            <span>
-              Límite: {{ orden.fecha_limite | date:'dd/MM/yyyy' }}
-              <span class="dias-info" *ngIf="orden.estado_ord === 'pendiente'">
-                ({{ estaVencida(orden) ? 'Vencida' : diasRestantes(orden) + ' días' }})
-              </span>
-            </span>
-          </div>
-        </div>
+      <!-- Monto total -->
+      <div class="orden-monto">
+        <span class="monto-label">Total:</span>
+        <span class="monto-valor">{{ orden.total | currency:'MXN':'symbol':'1.2-2' }}</span>
       </div>
-      <!-- Indicador de facturas 
-      <div class="orden-facturas" *ngIf="orden.facturas && orden.facturas.length > 0">
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-        </svg>
-        <span>{{ orden.facturas.length }} factura(s) asociada(s)</span>
-      </div> -->
+
+      <!-- Acciones -->
       <div class="orden-acciones">
         <button 
           *ngIf="puedeGenerarFactura(orden)"
@@ -367,9 +317,9 @@
         <p class="orden-seleccionada-info">
           Orden: <strong>{{ ordenParaFactura?.referencia_ord }}</strong>
           <br>
-          Total pendiente: <strong>{{ calcularTotalConDescuento(ordenParaFactura!) | currency:'MXN':'symbol':'1.2-2' }}</strong>
+          Total pendiente: <strong>{{ ordenParaFactura?.total | currency:'MXN':'symbol':'1.2-2' }}</strong>
         </p>
-  
+
         <form (ngSubmit)="generarFactura()">
           <div class="form-group">
             <label for="numero_fac">Número de Factura *</label>
@@ -382,7 +332,7 @@
               required
             />
           </div>
-  
+
           <div class="form-group">
             <label for="concepto">Concepto *</label>
             <textarea 
@@ -394,35 +344,36 @@
               required
             ></textarea>
           </div>
-  
+
           <div class="form-group">
             <label for="cantidad">Cantidad a pagar *</label>
             <input 
               type="number" 
               id="cantidad" 
               [(ngModel)]="datosFactura.cantidad" 
-              name="cantidad"
+              name="
+              ]]]cantidad"
               placeholder="0.00"
               step="0.01"
               min="0.01"
-              [max]="calcularTotalConDescuento(ordenParaFactura!)"
+              max="ordenParaFactura?.total"
               required
             />
             <small class="help-text">
-              Máximo: {{ calcularTotalConDescuento(ordenParaFactura!) | currency:'MXN':'symbol':'1.2-2' }}
+              Máximo: {{ ordenParaFactura?.total | currency:'MXN':'symbol':'1.2-2' }}
             </small>
           </div>
-  
+          
           <div class="info-restante" *ngIf="datosFactura.cantidad > 0">
             <p>
               <strong>Restante después de esta factura:</strong>
-              {{ calcularTotalConDescuento(ordenParaFactura!) - datosFactura.cantidad | currency:'MXN':'symbol':'1.2-2' }}
+              {{ (ordenParaFactura?.total || 0) - datosFactura.cantidad | currency:'MXN':'symbol':'1.2-2' }}
             </p>
-            <p *ngIf="calcularTotalConDescuento(ordenParaFactura!) === datosFactura.cantidad" class="liquidado-msg">
+            <p *ngIf="ordenParaFactura?.total === datosFactura.cantidad" class="liquidado-msg">
               Esta factura liquidará completamente la orden
             </p>
           </div>
-  
+
           <div class="modal-footer">
             <button type="button" class="btn btn-secondary" (click)="cerrarFormularioFactura()">
               Cancelar

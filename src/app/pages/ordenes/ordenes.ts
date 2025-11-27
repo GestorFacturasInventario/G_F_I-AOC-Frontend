@@ -6,6 +6,7 @@ import { FacturasService } from '../../services/facturas.service';
 import { SearchService } from '../../services/serchbar.service';
 import { ConfirmarService } from '../../services/confirmar.service';
 import { Subscription } from 'rxjs';
+import { debounceTime, distinctUntilChanged } from 'rxjs';
 
 @Component({
   selector: 'app-ordenes',
@@ -76,9 +77,14 @@ export class OrdenesComponent implements OnInit, OnDestroy {
       this.cargarOrdenes();
       this.cargarAniosDisponibles();
 
-      this.searchSubscription = this.searchService.searchQuery$.subscribe(query => {
-        this.aplicarFiltros(query);
-      });
+      this.searchSubscription = this.searchService.searchQuery$
+        .pipe(
+          debounceTime(300),
+          distinctUntilChanged()
+        )
+        .subscribe(query => {
+          this.aplicarFiltros(query);
+        });
   }
 
   ngOnDestroy(): void {
@@ -203,9 +209,14 @@ export class OrdenesComponent implements OnInit, OnDestroy {
     }, 3000);
   }
 
-  calcularTotalConDescuento(orden: Orden): number {
-    if (!orden.descuento) return orden.total;
-    return orden.total - (orden.total * (orden.descuento / 100));
+  calcularTotalOriginal(orden: Orden): number {
+    if (!orden.descuento || orden.descuento === 0) return orden.total;
+    return orden.total / (1 - (orden.descuento / 100));
+  }
+
+  calcularAhorro(orden: Orden): number {
+    if (!orden.descuento || orden.descuento === 0) return 0;
+    return this.calcularTotalOriginal(orden) - orden.total;
   }
 
   estaVencida(orden: Orden): boolean {
@@ -365,8 +376,7 @@ export class OrdenesComponent implements OnInit, OnDestroy {
       return;
     }
 
-    const totalOrden = this.calcularTotalConDescuento(this.ordenParaFactura);
-    if (this.datosFactura.cantidad > totalOrden) {
+    if (this.datosFactura.cantidad > this.ordenParaFactura.total) {
       this.mostrarMensaje('La cantidad ingresada debe ser positiva', 'error');
       return;
     }
@@ -396,5 +406,9 @@ export class OrdenesComponent implements OnInit, OnDestroy {
         this.cargando = false;
       }
     });
+  }
+
+  trackByOrdenId(index: number, orden: Orden): string {
+    return orden._id!;
   }
 }
