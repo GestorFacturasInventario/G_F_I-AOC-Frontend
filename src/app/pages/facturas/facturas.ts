@@ -45,9 +45,11 @@ export class FacturasComponent implements OnInit, OnDestroy {
   // Para edicion de facturas
   facturaSeleccionada: Factura | null = null;
   mostrarFormularioEdicion: boolean = false;
+  nombreArchivo: string = ''; 
   datosEdicion = {
     concepto: '',
-    cantidad: 0
+    cantidad: 0,
+    archivo_fac: null
   };
 
   private searchSubscription?: Subscription;
@@ -184,11 +186,41 @@ export class FacturasComponent implements OnInit, OnDestroy {
     return !!(this.filtroAnio || this.filtroMes);
   }
 
+  onArchivoSeleccionado(event: any): void {
+    const file = event.target.files[0];
+
+    if (file) {
+      this.datosEdicion.archivo_fac = file;
+      this.nombreArchivo = file.name;
+    }
+  }
+
+  descargarArchivo(factura: Factura): void {
+    if (!factura.archivo_fac) {
+      this.mostrarMensaje('No hay archivo adjunto', 'error');
+      return
+    }
+
+    this.cargando = true;
+    this.facturasService.obtenerUrlDescargar(factura._id!).subscribe({
+      next: (response) => {
+        window.open(response.url, '_blank');
+        this.cargando = false;
+      },
+      error: (error) => {
+        console.error('Error al obtener URL: ', error);
+        this.mostrarMensaje('Error al descargar archivo', 'error');
+        this.cargando = false;
+      }
+    });
+  }
+
   abrirFormularioEdicion(factura: Factura): void {
     this.facturaSeleccionada = factura;
     this.datosEdicion = {
       concepto: factura.concepto,
-      cantidad: factura.cantidad
+      cantidad: factura.cantidad,
+      archivo_fac: null
     };
     this.mostrarFormularioEdicion = true;
   }
@@ -198,21 +230,20 @@ export class FacturasComponent implements OnInit, OnDestroy {
     this.facturaSeleccionada = null;
     this.datosEdicion = {
       concepto: '',
-      cantidad: 0
+      cantidad: 0,
+      archivo_fac: null
     };
   }
 
   async actualizarFactura(): Promise<void> {
     if (!this.facturaSeleccionada) return;
 
-    if (!this.datosEdicion.concepto || !this.datosEdicion.concepto.trim()) {
-      this.mostrarMensaje('El concepto es obligatorio', 'error');
-      return;
-    }
+    const formData = new FormData();
+    formData.append('concepto', this.datosEdicion.concepto);
+    formData.append('cantidad', this.datosEdicion.cantidad.toString());
 
-    if (!this.datosEdicion.cantidad || this.datosEdicion.cantidad <= 0) {
-      this.mostrarMensaje('La cantidad ingresada debe ser positiva', 'error');
-      return;
+    if (this.datosEdicion.archivo_fac) {
+      formData.append('archivo_fac', this.datosEdicion.archivo_fac);
     }
 
     const confirmado = await this.confirmarService.confirm({
@@ -226,7 +257,7 @@ export class FacturasComponent implements OnInit, OnDestroy {
     if (!confirmado) return;
 
     this.cargando = true;
-    this.facturasService.actualizarFactura(this.facturaSeleccionada._id!, this.datosEdicion!).subscribe({
+    this.facturasService.actualizarFactura(this.facturaSeleccionada._id!, formData).subscribe({
       next: () => {
         this.mostrarMensaje('Factura actualizada correctamente', 'success');
         this.cerrarFormularioEdicion();

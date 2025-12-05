@@ -130,6 +130,29 @@
     background-color: #f5f5f5;
     cursor: not-allowed;
   }
+
+  .form-group input[type="file"] {
+    padding: 8px;
+    cursor: pointer;
+    background-color: #f9f9f9;
+  }
+
+  .form-group input[type="file"]:hover:not(:disabled) {
+    background-color: #f0f0f0;
+  }
+
+  .archivo-info,
+  .archivo-actual {
+    display: block;
+    margin-top: 5px;
+    font-size: 0.85rem;
+    color: #666;
+  }
+
+  .archivo-info {
+    color: #28a745;
+    font-weight: 500;
+  }
   
   .form-actions {
     display: flex;
@@ -192,6 +215,27 @@
   }
   
   .btn-danger svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  .btn-download {
+    background-color: #17a2b8;
+    color: white;
+    padding: 0.4rem 0.8rem;
+    font-size: 0.8rem;
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+  }
+
+  .btn-download:hover:not(:disabled) {
+    background-color: #138496;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(23, 162, 184, 0.3);
+  }
+
+  .btn-download svg {
     width: 16px;
     height: 16px;
   }

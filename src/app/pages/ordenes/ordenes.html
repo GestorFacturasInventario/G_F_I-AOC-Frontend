@@ -1,5 +1,5 @@
 <div class="ordenes-container">
-  <h2>Gestión de Órdenes de Compra</h2>
+  <h2 class="titulo-ordenes">Gestión de Órdenes de Compra</h2>
 
   <!-- Mensaje de notificación -->
   <div *ngIf="mensaje" class="mensaje" [ngClass]="{'mensaje-success': tipoMensaje === 'success', 'mensaje-error': tipoMensaje === 'error'}">
@@ -171,6 +171,17 @@
 
       <!-- Acciones -->
       <div class="orden-acciones">
+        <button
+          class="btn btn-download"
+          (click)="descargarArchivo(orden); $event.stopPropagation()"
+          [disabled]="cargando"
+          title="Descargar archivo"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+          </svg>
+        </button>
+
         <button 
           *ngIf="puedeGenerarFactura(orden)"
           class="btn btn-factura"
@@ -195,6 +206,11 @@
           Editar
         </button>
 
+        <button class="btn btn-facturasOrden"
+          (click)="verFacturas(orden)">
+          Ver Facturas
+        </button>
+
         <button 
           class="btn btn-eliminar"
           (click)="eliminarOrden(orden, $event)"
@@ -204,7 +220,6 @@
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
           </svg>
-          Eliminar
         </button>
       </div>
     </div>
@@ -248,19 +263,21 @@
               required
             />
           </div>
-  
+          
           <div class="form-group">
             <label for="archivo_ord">Archivo *</label>
             <input 
-              type="text" 
+              type="file" 
               id="archivo_ord" 
-              [(ngModel)]="datosEdicion.archivo_ord" 
-              name="archivo_ord"
-              placeholder="Nombre/ruta del archivo"
-              required
+              (change)="onArchivoSeleccionado($event, 'orden')"
+              accept=".pdf,.doc,.docx,.xls,.xlsx"
+              [disabled]="cargando"
             />
+            <small *ngIf="nombreArchivo" class="archivo-info">
+              seleccionado: {{ nombreArchivo }}
+            </small>
           </div>
-  
+          
           <div class="form-row">
             <div class="form-group">
               <label for="fecha_limite">Fecha Límite *</label>
@@ -364,6 +381,20 @@
             </small>
           </div>
           
+          <div class="form-group">
+            <label for="archivo_fac">Archivo</label>
+            <input 
+              type="file"
+              id="archivo_fac"
+              (change)="onArchivoSeleccionado($event, 'factura')"
+              accept=".pdf,.doc,.docx,.xls,.xlsx"
+              [disabled]="cargando"
+            />
+            <small *ngIf="nombreArchivo" class="archivo-info">
+              seleccionado: {{ nombreArchivo }}
+            </small>
+          </div>
+          
           <div class="info-restante" *ngIf="datosFactura.cantidad > 0">
             <p>
               <strong>Restante después de esta factura:</strong>
@@ -383,6 +414,73 @@
             </button>
           </div>
         </form>
+      </div>
+    </div>
+  </div>
+  <!-- Modal para ver facturas de la orden -->
+  <div *ngIf="mostrarFacturas" class="modal-overlay" (click)="cerrarFacturas()">
+    <div class="modal-contenido" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3>Facturas de la Orden</h3>
+        <button class="btn-close" (click)="cerrarFacturas()">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+
+      <div class="modal-body">
+        <div *ngIf="facturas.length > 0; else noFacturas">
+          <div class="facturas-grid">
+            <div *ngFor="let fac of facturas" class="factura-card">
+              <div class="factura-header">
+                <span class="factura-numero">{{ fac.numero_fac }}</span>
+                <span class="factura-badge">{{ fac.cantidad | currency:'MXN':'symbol':'1.2-2' }}</span>
+              </div>
+              
+              <div class="factura-concepto">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+                <span>{{ fac.concepto }}</span>
+              </div>
+
+              <div class="factura-fecha" *ngIf="fac.createdAt">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+                <span>{{ fac.createdAt | date:'dd/MM/yyyy' }}</span>
+              </div>
+
+              <button 
+                class="btn btn-download-factura"
+                (click)="descargarArchivoFactura(fac._id)"
+                [disabled]="cargando"
+                *ngIf="fac.archivo_fac"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+                </svg>
+                Descargar Archivo
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <ng-template #noFacturas>
+          <div class="sin-datos-modal">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+            </svg>
+            <p>No hay facturas registradas para esta orden.</p>
+          </div>
+        </ng-template>
+      </div>
+
+      <div class="modal-footer-facturas">
+        <button class="btn-close-modal" (click)="cerrarFacturas()">
+          Cerrar
+        </button>
       </div>
     </div>
   </div>

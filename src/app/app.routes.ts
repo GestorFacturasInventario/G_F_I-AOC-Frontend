@@ -1,7 +1,5 @@
 import { Routes } from '@angular/router';
 import { authGuard } from './guards/auth-guard';
-import { LoginComponent } from './pages/login/login';
-import { GoogleSuccessComponent } from './pages/google-succes.component';
 import { HomeLayoutComponent } from './layouts/home-layout/home-layout';
 import { PlaceholderComponent } from './pages/placeholder/placeholder';
 
@@ -15,8 +13,11 @@ export const routes: Routes = [
         component: HomeLayoutComponent,
         canActivate: [authGuard],
         children: [
-            { path: '', redirectTo: 'home', pathMatch: 'full' },
-            { path: 'home', component: PlaceholderComponent, data: { title: 'Inicio' } },
+            { path: '', redirectTo: 'Inicio', pathMatch: 'full' },
+            {
+                path: 'Inicio',
+                loadComponent: () => import('./pages/inicio/inicio').then(m => m.InicioComponent)
+            },
             {
                 path: 'Usuarios',
                 loadComponent: () => import('./pages/usuarios/usuarios').then(m => m.UsuariosComponent)

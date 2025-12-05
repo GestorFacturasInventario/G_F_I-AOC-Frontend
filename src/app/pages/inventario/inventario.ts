@@ -22,7 +22,8 @@ export class InventarioComponent implements OnInit, OnDestroy {
   num_parte: string = '';
   descripcion_art: string = '';
   cantidad: number = 0;
-  imagen: string = '';
+  imagen_art: string = '';
+  nombreArchivo: string = '';
 
   // Estado
   cargando: boolean = false;
@@ -95,7 +96,7 @@ export class InventarioComponent implements OnInit, OnDestroy {
     this.num_parte = articulo.num_parte || '';
     this.descripcion_art = articulo.descripcion_art || '';
     this.cantidad = articulo.cantidad || 0;
-    this.imagen = articulo.imagen || '';
+    this.imagen_art = articulo.imagen_art || '';
   }
 
   cancelarEdicion(): void {
@@ -108,7 +109,7 @@ export class InventarioComponent implements OnInit, OnDestroy {
     this.num_parte = '';
     this.descripcion_art = '';
     this.cantidad = 0;
-    this.imagen = '';
+    this.imagen_art = '';
   }
 
   mostrarMensaje(texto: string, tipo: 'success' | 'error'): void {
@@ -132,27 +133,39 @@ export class InventarioComponent implements OnInit, OnDestroy {
       this.mostrarMensaje('La cantidad no puede ser negativa', 'error');
       return false;
     }
-    if (!this.imagen || !this.imagen.trim()) {
+    if (!this.imagen_art) {
       this.mostrarMensaje('La imagen es obligatoria', 'error');
       return false;
     }
     return true;
   }
 
+  onArchivoSeleccionado(event: any) {
+    const file = event.target.files[0];
+
+    if (file) {
+      this.imagen_art = file;
+      this.nombreArchivo = file.name;
+    }
+  }
+
   guardarArticulo(): void {
     if (!this.validarFormulario()) return;
 
     this.cargando = true;
-    const datosArticulo = {
-      num_parte: this.num_parte,
-      descripcion_art: this.descripcion_art,
-      cantidad: this.cantidad,
-      imagen: this.imagen
-    };
+    const formData = new FormData();
+    formData.append('num_parte', this.num_parte);
+    formData.append('descripcion_art', this.descripcion_art);
+    formData.append('cantidad', this.cantidad.toString());
+
+    if (this.imagen_art) {
+      formData.append('imagen_art', this.imagen_art);
+    }
+
 
     if (this.modoEdicion && this.articuloSeleccionado) {
       // Actualizar artículo existente
-      this.articulosService.actualizarArticulo(this.articuloSeleccionado._id!, datosArticulo).subscribe({
+      this.articulosService.actualizarArticulo(this.articuloSeleccionado._id!, formData).subscribe({
         next: () => {
           this.mostrarMensaje('Artículo actualizado correctamente', 'success');
           this.cargarArticulos();
@@ -168,7 +181,7 @@ export class InventarioComponent implements OnInit, OnDestroy {
       });
     } else {
       // Crear nuevo artículo
-      this.articulosService.crearArticulo(datosArticulo).subscribe({
+      this.articulosService.crearArticulo(formData).subscribe({
         next: () => {
           this.mostrarMensaje('Artículo agregado correctamente', 'success');
           this.cargarArticulos();

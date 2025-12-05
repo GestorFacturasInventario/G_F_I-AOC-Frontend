@@ -47,17 +47,21 @@ export class CotizacionesService {
     return this.http.get<any>(`${this.apiUrl}/filtros`, { params });
   }
 
+  obtenerUrlDescarga(id: string): Observable<{ url: string }> {
+    return this.http.get<{ url: string }>(`${this.apiUrl}/download/${id}`);
+  }
+
   // Obtener años disponibles
   obtenerAniosDisponibles(): Observable<{ años: number[] }> {
     return this.http.get<{ años: number[] }>(`${this.apiUrl}/anios`);
   }
 
-  crearCotizacion(cotizacion: any): Observable<Cotizacion> {
-    return this.http.post<Cotizacion>(`${this.apiUrl}/store`, cotizacion);
+  crearCotizacion(formData: FormData): Observable<Cotizacion> {
+    return this.http.post<Cotizacion>(`${this.apiUrl}/store`, formData);
   }
 
-  actualizarCotizacion(id: string, cotizacion: any): Observable<Cotizacion> {
-    return this.http.put<Cotizacion>(`${this.apiUrl}/update/${id}`, cotizacion);
+  actualizarCotizacion(id: string, formData: FormData): Observable<Cotizacion> {
+    return this.http.put<Cotizacion>(`${this.apiUrl}/update/${id}`, formData);
   }
 
   cambiarEstado(id: string, nuevoEstado: string): Observable<any> {

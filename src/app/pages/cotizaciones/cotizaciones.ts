@@ -26,6 +26,8 @@ export class CotizacionesComponent implements OnInit {
   archivo_cot: string = '';
   costo: number = 0;
   moneda: 'MXN' | 'USD' = 'MXN';
+  archivoSeleccionado: File | null = null;
+  nombreArchivo: string = '';
 
   // Filtros
   filtroEstado: string = '';
@@ -56,11 +58,12 @@ export class CotizacionesComponent implements OnInit {
 
   mostrarFormularioOrden: boolean = false;
   cotizacionParaOrden: Cotizacion | null = null;
+
   ordenData: CrearOrdenData = {
     referencia_ord: '',
     descripcion_ord: '',
     empleado: '',
-    archivo_ord: '',
+    archivo_ord: null,
     fecha_limite: '',
     descuento: 0
   };
@@ -203,6 +206,8 @@ export class CotizacionesComponent implements OnInit {
     this.archivo_cot = cotizacion.archivo_cot || '';
     this.costo = cotizacion.costo || 0;
     this.moneda = cotizacion.moneda || 'MXN';
+    this.archivoSeleccionado = null;
+    this.nombreArchivo = '';
   }
 
   limpiarFormulario(): void {
@@ -213,6 +218,8 @@ export class CotizacionesComponent implements OnInit {
     this.archivo_cot = '';
     this.costo = 0;
     this.moneda = 'MXN';
+    this.archivoSeleccionado = null;
+    this.nombreArchivo = '';
   }
 
   mostrarMensaje(texto: string, tipo: 'success' | 'error'): void {
@@ -221,6 +228,20 @@ export class CotizacionesComponent implements OnInit {
     setTimeout(() => {
       this.mensaje = null;
     }, 3000);
+  }
+
+  onArchivoSeleccionado(event: any, tipo: 'cotizacion' | 'orden'): void {
+    const file = event.target.files[0];
+    
+    if (!file) return;
+
+    if (tipo === 'cotizacion') {
+      this.archivoSeleccionado = file;
+    } else if (tipo === 'orden') {
+      this.ordenData.archivo_ord = file;
+    }
+
+    this.nombreArchivo = file.name;
   }
 
   validarFormulario(): boolean {
@@ -236,7 +257,8 @@ export class CotizacionesComponent implements OnInit {
       this.mostrarMensaje('La descripción es obligatoria', 'error');
       return false;
     }
-    if (!this.archivo_cot || !this.archivo_cot.trim()) {
+    // Al crear: el archivo es obligatorio
+    if (!this.cotizacionSeleccionada && !this.archivoSeleccionado) {
       this.mostrarMensaje('El archivo es obligatorio', 'error');
       return false;
     }
@@ -255,18 +277,23 @@ export class CotizacionesComponent implements OnInit {
     if (!this.validarFormulario()) return;
 
     this.cargando = true;
-    const datosCotizacion = {
-      numero_cot: this.numero_cot,
-      cliente: this.cliente,
-      descripcion_cot: this.descripcion_cot,
-      archivo_cot: this.archivo_cot,
-      costo: this.costo,
-      moneda: this.moneda
-    };
+    
+    // Crear FormData para enviar archivo
+    const formData = new FormData();
+    formData.append('numero_cot', this.numero_cot);
+    formData.append('cliente', this.cliente);
+    formData.append('descripcion_cot', this.descripcion_cot);
+    formData.append('costo', this.costo.toString());
+    formData.append('moneda', this.moneda);
+    
+    // Agregar archivo si hay uno seleccionado
+    if (this.archivoSeleccionado) {
+      formData.append('archivo_cot', this.archivoSeleccionado);
+    }
 
     if (this.cotizacionSeleccionada) {
       // Método para actualizar
-      this.cotizacionesService.actualizarCotizacion(this.cotizacionSeleccionada._id!, datosCotizacion).subscribe({
+      this.cotizacionesService.actualizarCotizacion(this.cotizacionSeleccionada._id!, formData).subscribe({
         next: () => {
           this.mostrarMensaje('Cotización actualizada correctamente', 'success');
           this.cargarCotizaciones();
@@ -275,13 +302,14 @@ export class CotizacionesComponent implements OnInit {
         },
         error: (error) => {
           console.error('Error al actualizar cotización:', error);
-          this.mostrarMensaje('Error al actualizar cotización', 'error');
+          const mensaje = error.error?.mensaje || 'Error al actualizar cotización';
+          this.mostrarMensaje(mensaje, 'error');
           this.cargando = false;
         }
       });
     } else {
       // Método para crear
-      this.cotizacionesService.crearCotizacion(datosCotizacion).subscribe({
+      this.cotizacionesService.crearCotizacion(formData).subscribe({
         next: () => {
           this.mostrarMensaje('Cotización agregada correctamente', 'success');
           this.cargarCotizaciones();
@@ -388,6 +416,27 @@ export class CotizacionesComponent implements OnInit {
     return this.cotizacionSeleccionada ? 'Actualizar' : 'Agregar';
   }
 
+  descargarArchivo(cotizacion: Cotizacion): void {
+    if (!cotizacion.archivo_cot) {
+      this.mostrarMensaje('No hay archivo adjunto', 'error');
+      return;
+    }
+
+    this.cargando = true;
+    this.cotizacionesService.obtenerUrlDescarga(cotizacion._id!).subscribe({
+      next: (response) => {
+        // Abrir el archivo en nueva pestaña
+        window.open(response.url, '_blank');
+        this.cargando = false;
+      },
+      error: (error) => {
+        console.error('Error al obtener URL:', error);
+        this.mostrarMensaje('Error al descargar archivo', 'error');
+        this.cargando = false;
+      }
+    });
+  }
+
   //Funciones para generar orden desde este modulo
   puedeGenerarOrden(cotizacion: Cotizacion): boolean {
     return cotizacion.estado_cot === 'en proceso';
@@ -406,7 +455,7 @@ export class CotizacionesComponent implements OnInit {
       referencia_ord: '',
       descripcion_ord: cotizacion.descripcion_cot || '',
       empleado: '',
-      archivo_ord: '',
+      archivo_ord: null,
       fecha_limite: this.fechaMinima,
       descuento: 0
     };
@@ -420,29 +469,21 @@ export class CotizacionesComponent implements OnInit {
   async generarOrden(): Promise<void> {
     if (!this.cotizacionParaOrden) return;
 
-    if (!this.ordenData.referencia_ord || !this.ordenData.referencia_ord.trim()) {
-      this.mostrarMensaje('La referencia es obligatoria', 'error');
-      return;
+    const formData = new FormData();
+    formData.append('referencia_ord', this.ordenData.referencia_ord);
+    formData.append('empleado', this.ordenData.empleado);
+    formData.append('fecha_limite', this.ordenData.fecha_limite);
+
+    if (this.ordenData.descripcion_ord !== undefined) {
+      formData.append('descripcion_ord', this.ordenData.descripcion_ord);
     }
 
-    if (!this.ordenData.empleado || !this.ordenData.empleado.trim()) {
-      this.mostrarMensaje('El empleado es obligatorio', 'error');
-      return;
+    if (this.ordenData.descuento !== undefined) {
+      formData.append('descuento', this.ordenData.descuento.toString());
     }
 
-    if (!this.ordenData.archivo_ord || !this.ordenData.archivo_ord.trim()) {
-      this.mostrarMensaje('El archivo es obligatorio', 'error');
-      return;
-    }
-    
-    if (!this.ordenData.fecha_limite) {
-      this.mostrarMensaje('La fecha limite es obligatoria', 'error');
-      return;
-    }
-
-    if (this.ordenData.descuento && this.ordenData.descuento >= 100) {
-      this.mostrarMensaje('El descuento no puede del 100%', 'error');
-      return;
+    if (this.ordenData.archivo_ord) {
+      formData.append('archivo_ord', this.ordenData.archivo_ord);
     }
 
     //Confirmacion la generacion de la orden
@@ -457,7 +498,7 @@ export class CotizacionesComponent implements OnInit {
     if (!confirmado) return;
 
     this.cargando = true;
-    this.ordenesService.generarOrden(this.cotizacionParaOrden._id!, this.ordenData).subscribe({
+    this.ordenesService.generarOrden(this.cotizacionParaOrden._id!, formData).subscribe({
       next: (orden) => {
         this.mostrarMensaje('Orden generada correctamente', 'success');
         this.cerrarFormularioOrden();

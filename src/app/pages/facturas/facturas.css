@@ -666,3 +666,87 @@ h2 {
     justify-content: space-between;
   }
 }
+/* Botón de Descargar - Izquierda del botón Editar */
+.btn-download {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem;
+  background: #17a2b8;
+  border: 1px solid #d1d5db00;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s;
+  color: #ffffff;
+  margin-right: 0.5rem;
+  flex-shrink: 0;
+}
+
+.btn-download:hover {
+  background: #128091;
+  border-color: #9ca3af00;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.btn-download:active {
+  transform: translateY(0);
+}
+
+.btn-download:disabled {
+  background: #d8d8d8;
+  border-color: #e5e7eb;
+  color: #0a5eef;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.btn-download svg {
+  width: 18px;
+  height: 18px;
+}
+
+/* Ajuste del footer para alinear los botones */
+.factura-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 0.6rem;
+  border-top: 1px solid #e5e7eb;
+}
+
+/* Contenedor para botones del lado derecho */
+.factura-footer .acciones-derecha {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* Ajuste del botón Editar para que funcione con el botón de descarga a su izquierda */
+.btn-editar {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.5rem 0.9rem;
+  background: #3b82f6;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s;
+  flex-shrink: 0;
+  color: white;
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
+.btn-editar:hover {
+  background: #2563eb;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(59, 130, 246, 0.3);
+}
+
+.btn-editar svg {
+  width: 16px;
+  height: 16px;
+}

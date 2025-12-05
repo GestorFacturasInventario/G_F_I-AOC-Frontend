@@ -21,6 +21,7 @@ export interface Factura {
     numero_fac: string;
     concepto: string;
     cantidad: number;
+    archivo_fac?: File | null; 
     createdAt: string;
     updatedAt: string;
 }
@@ -29,6 +30,7 @@ export interface CrearFacturaData {
     numero_fac: string;
     concepto: string;
     cantidad: number;
+    archivo_fac: File | null;
 }
 
 export interface FiltrosFactura {
@@ -62,11 +64,15 @@ export class FacturasService {
         return this.http.get<{años: number[]}>(`${this.apiUrl}/anios`);
     }
 
-    generarFactura(ordenId: string, datos: any): Observable<Factura> {
+    obtenerUrlDescargar(id: string): Observable<{ url: string }> {
+        return this.http.get<{ url: string }>(`${this.apiUrl}/download/${id}`);
+    }
+
+    generarFactura(ordenId: string, datos: FormData): Observable<Factura> {
         return this.http.post<Factura>(`${this.apiUrl}/store/${ordenId}`, datos);
     }
 
-    actualizarFactura(facturaId: string, datos: any): Observable<Factura> {
+    actualizarFactura(facturaId: string, datos: FormData): Observable<Factura> {
         return this.http.put<Factura>(`${this.apiUrl}/update/${facturaId}`, datos);
     }
 }

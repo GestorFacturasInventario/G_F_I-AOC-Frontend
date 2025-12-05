@@ -51,13 +51,18 @@
         <div class="form-group">
           <label for="archivo_cot">Archivo</label>
           <input 
-            type="text" 
+            type="file" 
             id="archivo_cot" 
-            [(ngModel)]="archivo_cot" 
-            name="archivo_cot"
-            placeholder="Nombre/ruta del archivo"
+            (change)="onArchivoSeleccionado($event, 'cotizacion')"
+            accept=".pdf,.jpg,.jpeg,.png,.doc,.docx,.xls,.xlsx"
             [disabled]="cargando"
           />
+          <small *ngIf="nombreArchivo" class="archivo-info">
+            Seleccionado: {{ nombreArchivo }}
+          </small>
+          <small *ngIf="cotizacionSeleccionada && archivo_cot && !nombreArchivo" class="archivo-actual">
+            Archivo actual: {{ archivo_cot }}
+          </small>
         </div>
 
         <div class="form-row">
@@ -280,6 +285,17 @@
           </div>
           <div class="cotizacion-actions">
             <button
+              class="btn btn-download"
+              (click)="descargarArchivo(cotizacion); $event.stopPropagation()"
+              [disabled]="cargando"
+              title="Descargar archivo"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+              </svg>
+            </button>
+
+            <button
             *ngIf="puedeGenerarOrden(cotizacion)"
             class="btn btn-success"
             (click)="abrirFormularioOrden(cotizacion); $event.stopPropagation()"
@@ -312,7 +328,6 @@
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                 </svg>
-                Eliminar
             </button>
           </div>
         </div>
@@ -374,13 +389,15 @@
           <div class="form-group">
             <label for="archivo_ord">Archivo *</label>
             <input 
-              type="text" 
+              type="file" 
               id="archivo_ord" 
-              [(ngModel)]="ordenData.archivo_ord" 
-              name="archivo_ord"
-              placeholder="Nombre/ruta del archivo"
-              required
+              (change)="onArchivoSeleccionado($event, 'orden')"
+              accept=".pdf,.doc,.docx,.xls,.xlsx"
+              [disabled]="cargando"
             />
+            <small *ngIf="nombreArchivo" class="archivo-info">
+              seleccionado: {{ nombreArchivo }}
+            </small>
           </div>
   
           <div class="form-row">

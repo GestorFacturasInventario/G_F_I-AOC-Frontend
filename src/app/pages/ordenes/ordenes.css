@@ -21,6 +21,10 @@ h3 {
   font-size: 1.3rem;
 }
 
+.titulo-ordenes {
+  text-align: center;
+}
+
 /* Mensajes */
 .mensaje {
   padding: 1rem;
@@ -672,11 +676,34 @@ h3 {
   border-radius: 8px;
   cursor: pointer;
   font-weight: 500;
-  transition: all 0.2s;
+  transition: all 0.2s; 
 }
 
 .btn-secondary:hover {
   background: #e5e7eb;
+}
+
+/* Botón específico para cerrar modales de solo lectura */
+.btn-close-modal {
+  padding: 0.75rem 2rem;
+  background: #ff0000d0;
+  color: #ffffff;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.2s;
+  min-width: 150px;
+}
+
+.btn-close-modal:hover {
+  background: #ff0000;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(48, 48, 48, 0.362);
+}
+
+.btn-close-modal:active {
+  transform: scale(0.98);
 }
 
 .btn-primary {
@@ -728,6 +755,7 @@ h3 {
 
   .modal-footer {
     flex-direction: column-reverse;
+    padding: 1.5rem 1rem 1rem 1rem;
   }
 
   .btn-secondary,
@@ -746,6 +774,29 @@ h3 {
     justify-content: center;
   }
 }
+
+.btn-download {
+    background-color: #17a2b8;
+    color: white;
+    padding: 0.4rem 0.8rem;
+    font-size: 0.8rem;
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    border-color: rgba(255, 255, 255, 0);
+    border-radius: 20%;
+  }
+
+  .btn-download:hover:not(:disabled) {
+    background-color: #138496;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(23, 162, 184, 0.3);
+  }
+
+  .btn-download svg {
+    width: 16px;
+    height: 16px;
+  }
 
 .btn-factura {
   display: flex;
@@ -830,6 +881,173 @@ h3 {
   font-size: 0.9rem;
 }
 
+.btn-factura:active:not(:disabled) {
+  transform: scale(0.97);
+}
+
+/* Botón para ver facturas de la orden */
+.btn-facturasOrden {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.4rem 0.8rem;
+  background-color: #8b5cf6;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+  font-size: 0.8rem;
+  transition: all 0.2s;
+}
+
+.btn-facturasOrden:hover:not(:disabled) {
+  background-color: #7c3aed;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(139, 92, 246, 0.3);
+}
+
+.btn-facturasOrden:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.btn-facturasOrden:active:not(:disabled) {
+  transform: scale(0.97);
+}
+
+/* Estilos para el grid de facturas dentro del modal */
+.facturas-grid {
+  display: grid;
+  gap: 0.75rem;
+  padding: 0.5rem;
+}
+
+.factura-card {
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 1.25rem;
+  transition: all 0.2s;
+}
+
+.factura-card:hover {
+  border-color: #8b5cf6;
+  box-shadow: 0 2px 8px rgba(139, 92, 246, 0.15);
+}
+
+.factura-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.75rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.factura-numero {
+  font-weight: 700;
+  color: #1f2937;
+  font-size: 1rem;
+}
+
+.factura-badge {
+  background: #8b5cf6;
+  color: white;
+  padding: 0.25rem 0.75rem;
+  border-radius: 12px;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.factura-concepto,
+.factura-fecha {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+  color: #6b7280;
+  margin-bottom: 0.5rem;
+}
+
+.factura-concepto svg,
+.factura-fecha svg {
+  width: 16px;
+  height: 16px;
+  color: #9ca3af;
+  flex-shrink: 0;
+}
+
+.factura-concepto span {
+  color: #374151;
+  line-height: 1.4;
+}
+
+.btn-download-factura {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  width: 100%;
+  padding: 0.7rem 1rem;
+  background-color: #10b981;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+  font-size: 0.85rem;
+  transition: all 0.2s;
+  margin-top: 1rem;
+}
+
+.btn-download-factura:hover:not(:disabled) {
+  background-color: #059669;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(16, 185, 129, 0.3);
+}
+
+.btn-download-factura:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.btn-download-factura svg {
+  width: 18px;
+  height: 18px;
+}
+
+.sin-datos-modal {
+  text-align: center;
+  padding: 3rem 1.5rem;
+  color: #9ca3af;
+}
+
+.sin-datos-modal svg {
+  width: 48px;
+  height: 48px;
+  margin: 0 auto 1rem;
+  color: #d1d5db;
+}
+
+.sin-datos-modal p {
+  font-size: 1rem;
+  color: #6b7280;
+  margin: 0;
+}
+
+.modal-footer-facturas {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  padding: 1.5rem;
+  padding-bottom: 1.5rem;
+  border-top: 1px solid #e5e7eb;
+  margin-top: 0.5rem;
+}
+
 /* Responsive adicional para modales */
 @media (max-width: 640px) {
   .info-restante {
@@ -842,6 +1060,28 @@ h3 {
   
   .liquidado-msg {
     font-size: 0.85rem;
+  }
+
+  .factura-card {
+    padding: 1rem;
+  }
+  
+  .facturas-grid {
+    padding: 0.5rem;
+  }
+  
+  .btn-download-factura {
+    padding: 0.6rem 0.75rem;
+    font-size: 0.8rem;
+  }
+
+  /* El botón de cerrar modal mantiene su ancho y no se expande */
+  .btn-close-modal {
+    width: auto;
+    align-self: stretch;
+    min-width: 120px;
+    padding: 0.75rem 1rem;
+    background-color: red;
   }
 }
 

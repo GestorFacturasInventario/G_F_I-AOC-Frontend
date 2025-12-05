@@ -18,16 +18,18 @@ export interface Orden {
     total: number;
     estado_ord: 'pendiente' | 'liquidado';
     fecha_limite: Date;
+    facturas?: any[];
     descuento?: number;
     createdAt?: string;
     updateAt?: string;
 }
 
+
 export interface CrearOrdenData {
     referencia_ord: string;
     descripcion_ord?: string;
     empleado: string;
-    archivo_ord: string;
+    archivo_ord: File | null;
     fecha_limite: string;
     descuento?: number;
 }
@@ -47,8 +49,8 @@ export class OrdenesService {
 
     constructor(private http: HttpClient) {}
 
-    generarOrden(cotizacionId: string, datos: CrearOrdenData): Observable<Orden> {
-        return this.http.post<Orden>(`${this.apiUrl}/store/${cotizacionId}`, datos);
+    obtenerOrdenes(): Observable<Orden[]> {
+        return this.http.get<Orden[]>(`${this.apiUrl}/index`);
     }
 
     obtenerConFiltros(filtros: FiltrosOrden): Observable<any> {
@@ -66,11 +68,19 @@ export class OrdenesService {
         return this.http.get<{años: number[] }>(`${this.apiUrl}/anios`);
     }
 
-    obtenerOrdenes(): Observable<Orden[]> {
-        return this.http.get<Orden[]>(`${this.apiUrl}/index`);
+    obtenerUrlDescarga(id: string): Observable<{ url: string }> {
+        return this.http.get<{ url: string }>(`${this.apiUrl}/download/${id}`);
     }
 
-    actualizarOrden(ordenId: string, datos: any): Observable<Orden> {
+    verFacturasDeOrden(ordenId: string): Observable<any> {
+        return this.http.get(`${this.apiUrl}/show/facturas_orden/${ordenId}`);
+    }
+
+    generarOrden(cotizacionId: string, datos: FormData): Observable<Orden> {
+        return this.http.post<Orden>(`${this.apiUrl}/store/${cotizacionId}`, datos);
+    }
+
+    actualizarOrden(ordenId: string, datos: FormData): Observable<Orden> {
         return this.http.put<Orden>(`${this.apiUrl}/update/${ordenId}`, datos);
     }
 

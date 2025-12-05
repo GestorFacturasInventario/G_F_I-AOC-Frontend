@@ -29,8 +29,6 @@ export class OrdenesComponent implements OnInit, OnDestroy {
   mensaje: string | null = null;
   tipoMensaje: 'success' | 'error' = 'success';
 
-  private searchSubscription?: Subscription;
-
   meses = [
     { valor: 1, nombre: 'Enero' },
     { valor: 2, nombre: 'Febrero' },
@@ -55,7 +53,14 @@ export class OrdenesComponent implements OnInit, OnDestroy {
     archivo_ord: '',
     fecha_limite: '',
     descuento: 0
-  };
+  }
+  // Para archivos
+  archivoSeleccionado: File | null = null;
+  nombreArchivo: string = '';
+
+  // Boton de ver facturas desde ordenes
+  facturas: any[] = [];
+  mostrarFacturas = false;
 
   // Para generar facturas
   ordenParaFactura: Orden | null = null;
@@ -63,8 +68,11 @@ export class OrdenesComponent implements OnInit, OnDestroy {
   datosFactura = {
     numero_fac: '',
     concepto: '',
-    cantidad: 0
+    cantidad: 0,
+    archivo_fac: null
   }
+
+  private searchSubscription?: Subscription;
 
   constructor(
     private ordenesService: OrdenesService,
@@ -238,6 +246,41 @@ export class OrdenesComponent implements OnInit, OnDestroy {
     return hoy.toISOString().split('T')[0];
   }
 
+  onArchivoSeleccionado(event: any, tipo: 'orden' | 'factura'): void {
+    const file = event.target.files[0];
+
+    if (!file) return;
+
+    if (tipo === 'orden') {
+      this.datosEdicion.archivo_ord = file;
+    } else if (tipo === 'factura') {
+      this.datosFactura.archivo_fac = file;
+    }
+
+    this.nombreArchivo = file.name;
+  }
+
+  //Funcion para descargar el archivo
+  descargarArchivo(orden: Orden): void {
+    if (!orden.archivo_ord) {
+      this.mostrarMensaje('No hay archivo adjunto', 'error');
+      return;
+    }
+
+    this.cargando = true;
+    this.ordenesService.obtenerUrlDescarga(orden._id!).subscribe({
+      next: (response) => {
+        window.open(response.url, '_blank');
+        this.cargando = false;
+      },
+      error: (error) => {
+        console.error('Error al obtener UR: ', error);
+        this.mostrarMensaje('Error al descargar archivo', 'error');
+        this.cargando = false;
+      }
+    });
+  }
+
   abrirFormularioEdicion(orden: Orden): void {
     this.ordenSeleccionada = orden;
     this.mostrarFormularioEdicion = true;
@@ -246,9 +289,9 @@ export class OrdenesComponent implements OnInit, OnDestroy {
     this.datosEdicion = {
       descripcion_ord: orden.descripcion_ord,
       empleado: orden.empleado,
-      archivo_ord: orden.archivo_ord,
+      archivo_ord: orden.archivo_ord || '',
       fecha_limite: new Date(orden.fecha_limite).toISOString().split('T')[0],
-      descuento: orden.descuento || 0
+      descuento: orden.descuento || 0,
     };
   }
 
@@ -260,29 +303,20 @@ export class OrdenesComponent implements OnInit, OnDestroy {
   async actualizarOrden(): Promise<void> {
     if (!this.ordenSeleccionada) return;
 
-    if (!this.datosEdicion.descripcion_ord || !this.datosEdicion.descripcion_ord.trim()) {
-      this.mostrarMensaje('La descripcion es obligatoria', 'error');
-      return;
+    const formData = new FormData();
+    formData.append('empleado', this.datosEdicion.empleado);
+    formData.append('fecha_limite', this.datosEdicion.fecha_limite);
+    
+    if (this.datosEdicion.descripcion_ord !== undefined) {
+      formData.append('descripcion_ord', this.datosEdicion.descripcion_ord)
+    }
+    
+    if (this.datosEdicion.descuento !== undefined) {
+      formData.append('descuento', this.datosEdicion.descuento.toString());
     }
 
-    if (!this.datosEdicion.empleado || !this.datosEdicion.empleado.trim()) {
-      this.mostrarMensaje('El empleado es obligatorio', 'error');
-      return;
-    }
-
-    if (!this.datosEdicion.archivo_ord || !this.datosEdicion.archivo_ord.trim()) {
-      this.mostrarMensaje('El archivo es obligatorio', 'error');
-      return;
-    }
-
-    if (!this.datosEdicion.fecha_limite) {
-      this.mostrarMensaje('La fecha limite es obligatoria', 'error');
-      return;
-    }
-
-    if (this.datosEdicion.descuento && this.datosEdicion.descuento >= 100) {
-      this.mostrarMensaje('El descuento no puede del 100%', 'error');
-      return;
+    if (this.datosEdicion.archivo_ord) {
+      formData.append('archivo_ord', this.datosEdicion.archivo_ord);
     }
 
     const confirmado = await this.confirmarService.confirm({
@@ -296,7 +330,7 @@ export class OrdenesComponent implements OnInit, OnDestroy {
     if (!confirmado) return;
 
     this.cargando = true;
-    this.ordenesService.actualizarOrden(this.ordenSeleccionada._id!, this.datosEdicion).subscribe({
+    this.ordenesService.actualizarOrden(this.ordenSeleccionada._id!, formData).subscribe({
       next: () => {
         this.mostrarMensaje('Orden actualizada correctamente', 'success');
         this.cerrarFormularioEdicion();
@@ -341,6 +375,43 @@ export class OrdenesComponent implements OnInit, OnDestroy {
     });
   }
 
+  verFacturas(orden: Orden) {
+    this.cargando = true;
+
+    this.ordenesService.verFacturasDeOrden(orden._id!).subscribe({
+      next: (data) => {
+        this.facturas = data.facturas;
+        this.mostrarFacturas = true;
+        this.cargando = false;
+      },
+      error: (error) => {
+        console.error('Error al cargar facturas: ', error);
+        this.cargando = false;
+      }
+    });
+  }
+
+  cerrarFacturas() {
+    this.mostrarFacturas = false;
+    this.cargarOrdenes();
+  }
+
+  // Funcion para descargar el archivo de las facturas
+  descargarArchivoFactura(facturaId: string): void {
+    this.cargando = true;
+    this.facturasService.obtenerUrlDescargar(facturaId).subscribe({
+      next: (response) => {
+        window.open(response.url, '_blank');
+        this.cargando = false;
+      },
+      error: (error) => {
+        console.error('Error al obtener URL: ', error);
+        this.mostrarMensaje('Error al descargar archivo', 'error');
+        this.cargando = false;
+      }
+    });
+  }
+
   // Generacion de facturas
   puedeGenerarFactura(orden: Orden): boolean {
     return orden.estado_ord === 'pendiente';
@@ -354,7 +425,8 @@ export class OrdenesComponent implements OnInit, OnDestroy {
     this.datosFactura = {
       numero_fac: '',
       concepto: '',
-      cantidad: 0
+      cantidad: 0,
+      archivo_fac: null
     };
   }
 
@@ -366,19 +438,13 @@ export class OrdenesComponent implements OnInit, OnDestroy {
   async generarFactura(): Promise<void> {
     if (!this.ordenParaFactura) return;
 
-    if (!this.datosFactura.numero_fac || !this.datosFactura.numero_fac.trim()) {
-      this.mostrarMensaje('El numero de factura es obligatorio', 'error');
-      return;
-    }
+    const formData = new FormData();
+    formData.append('numero_fac', this.datosFactura.numero_fac);
+    formData.append('concepto', this.datosFactura.concepto);
+    formData.append('cantidad', this.datosFactura.cantidad.toString());
 
-    if (!this.datosFactura.concepto || !this.datosFactura.concepto.trim()) {
-      this.mostrarMensaje('El concepto es obligatorio', 'error');
-      return;
-    }
-
-    if (this.datosFactura.cantidad > this.ordenParaFactura.total) {
-      this.mostrarMensaje('La cantidad ingresada debe ser positiva', 'error');
-      return;
+    if (this.datosFactura.archivo_fac) {
+      formData.append('archivo_fac', this.datosFactura.archivo_fac);
     }
 
     const confirmado = await this.confirmarService.confirm({
@@ -392,7 +458,7 @@ export class OrdenesComponent implements OnInit, OnDestroy {
     if (!confirmado) return;
 
     this.cargando = true;
-    this.facturasService.generarFactura(this.ordenParaFactura._id!, this.datosFactura!).subscribe({
+    this.facturasService.generarFactura(this.ordenParaFactura._id!, formData!).subscribe({
       next: () => {
         this.mostrarMensaje('Factura generada correctamente', 'success');
         this.cerrarFormularioFactura();

@@ -7,7 +7,7 @@ export interface Articulo {
   num_parte: string;
   descripcion_art: string;
   cantidad: number;
-  imagen: string;
+  imagen_art: string;
   createdAt?: Date;
   updatedAt?: Date;
 }
@@ -28,12 +28,6 @@ export class ArticulosService {
     });
   }
 
-  obtenerArticulos(): Observable<Articulo[]> {
-    return this.http.get<Articulo[]>(`${this.apiUrl}/index`, { 
-      headers: this.getHeaders() 
-    });
-  }
-
   buscarArticulos(query: string): Observable<{ total: number; articulo: Articulo[] }> {
     return this.http.post<{ total: number; articulo: Articulo[] }>(
       `${this.apiUrl}/serch/items`,
@@ -45,21 +39,23 @@ export class ArticulosService {
     );
   }
 
-  crearArticulo(articulo: Partial<Articulo>): Observable<Articulo> {
-    return this.http.post<Articulo>(`${this.apiUrl}/store`, articulo, { 
-      headers: this.getHeaders() 
-    });
+  obtenerArticulos(): Observable<Articulo[]> {
+    return this.http.get<Articulo[]>(`${this.apiUrl}/index`);
   }
 
-  actualizarArticulo(id: string, articulo: Partial<Articulo>): Observable<Articulo> {
-    return this.http.put<Articulo>(`${this.apiUrl}/update/${id}`, articulo, { 
-      headers: this.getHeaders() 
-    });
+  obtenerUrlDescarga(articuloId: string): Observable<{ url: string }> {
+    return this.http.get<{ url: string }>(`${this.apiUrl}/download/${articuloId}`);
   }
 
-  eliminarArticulo(id: string): Observable<{ mensaje: string }> {
-    return this.http.delete<{ mensaje: string }>(`${this.apiUrl}/delete/${id}`, { 
-      headers: this.getHeaders() 
-    });
+  crearArticulo(datos: FormData): Observable<Articulo> {
+    return this.http.post<Articulo>(`${this.apiUrl}/store`, datos);
+  }
+
+  actualizarArticulo(articuloId: string, datos: FormData): Observable<Articulo> {
+    return this.http.put<Articulo>(`${this.apiUrl}/update/${articuloId}`, datos);
+  }
+
+  eliminarArticulo(articuloId: string): Observable<any> {
+    return this.http.delete(`${this.apiUrl}/delete/${articuloId}`);
   }
 }
