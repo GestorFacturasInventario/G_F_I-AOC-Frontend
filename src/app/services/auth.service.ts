@@ -2,12 +2,13 @@ import { Inject, Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { Observable, tap, map, throwError, shareReplay, finalize } from 'rxjs';
+import { environment } from '../../environments/environment';
 
 @Injectable({
     providedIn: 'root'
 })
 export class AuthService {
-    private apiUrl = 'http://localhost:3000/api/oauth';
+    private apiUrl = `${environment.apiUrl}/oauth`;
     private accessToken: string | null = null;
     private refresh$: Observable<void> | null = null;
 

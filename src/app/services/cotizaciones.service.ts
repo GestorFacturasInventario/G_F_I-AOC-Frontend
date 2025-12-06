@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { environment } from '../../environments/environment';
 
 export interface Cotizacion {
   _id: string;
@@ -26,7 +27,7 @@ export interface FiltrosCotizacion {
   providedIn: 'root'
 })
 export class CotizacionesService {
-  private apiUrl = 'http://localhost:3000/api/cotizaciones';
+  private apiUrl = `${environment.apiUrl}/cotizaciones`;
 
   constructor(private http: HttpClient) {}
 
