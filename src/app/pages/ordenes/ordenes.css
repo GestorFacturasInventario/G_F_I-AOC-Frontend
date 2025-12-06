@@ -21,10 +21,6 @@ h3 {
   font-size: 1.3rem;
 }
 
-.titulo-ordenes {
-  text-align: center;
-}
-
 /* Mensajes */
 .mensaje {
   padding: 1rem;
@@ -785,6 +781,7 @@ h3 {
     gap: 0.3rem;
     border-color: rgba(255, 255, 255, 0);
     border-radius: 20%;
+    cursor: pointer;
   }
 
   .btn-download:hover:not(:disabled) {

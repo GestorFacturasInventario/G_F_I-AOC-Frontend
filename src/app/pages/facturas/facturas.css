@@ -397,7 +397,6 @@ h2 {
 .btn-primary {
   background: #667eea;
   color: white;
-  flex: 1;
   transition: background-color 0.3s, transform 0.3s, box-shadow 0.3s;
 }
 
@@ -668,18 +667,18 @@ h2 {
 }
 /* Botón de Descargar - Izquierda del botón Editar */
 .btn-download {
+  background-color: #17a2b8;
+  color: white;
+  padding: 0.4rem 0.8rem;
+  font-size: 0.9rem;
+  font-weight: 500;
   display: flex;
   align-items: center;
-  justify-content: center;
-  padding: 0.5rem;
-  background: #17a2b8;
-  border: 1px solid #d1d5db00;
+  gap: 0.3rem;
+  border: none;
   border-radius: 6px;
   cursor: pointer;
   transition: all 0.2s;
-  color: #ffffff;
-  margin-right: 0.5rem;
-  flex-shrink: 0;
 }
 
 .btn-download:hover {

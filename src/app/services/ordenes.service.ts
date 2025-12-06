@@ -41,6 +41,18 @@ export interface FiltrosOrden {
     mes?: number;
 }
 
+// Interfaz para seccion de Inicio
+export interface OrdenesProximasVencer {
+    vencidas: {
+        total: number;
+        ordenes: Orden[];
+    };
+    proximas: {
+        total: number;
+        ordenes: Orden[];
+    };
+}
+
 @Injectable({
     providedIn: 'root'
 })
@@ -70,6 +82,15 @@ export class OrdenesService {
 
     obtenerUrlDescarga(id: string): Observable<{ url: string }> {
         return this.http.get<{ url: string }>(`${this.apiUrl}/download/${id}`);
+    }
+
+    // Endpoints para seccion de inicio -------------------------------------------------------------------
+    ordenesProximasVencer(): Observable<OrdenesProximasVencer> {
+        return this.http.get<OrdenesProximasVencer>(`${this.apiUrl}/ordenesPorVencer`);
+    }
+
+    verOrdenPorId(ordenId: string): Observable<Orden> {
+        return this.http.get<Orden>(`${this.apiUrl}/show/${ordenId}`);
     }
 
     verFacturasDeOrden(ordenId: string): Observable<any> {
