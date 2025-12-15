@@ -76,4 +76,8 @@ export class FacturasService {
     actualizarFactura(facturaId: string, datos: FormData): Observable<Factura> {
         return this.http.put<Factura>(`${this.apiUrl}/update/${facturaId}`, datos);
     }
+
+    eliminarFactura(facturaId: string): Observable<any> {
+        return this.http.delete(`${this.apiUrl}/delete/${facturaId}`);
+    }
 }

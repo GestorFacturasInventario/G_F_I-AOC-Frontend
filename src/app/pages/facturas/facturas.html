@@ -1,5 +1,4 @@
 <div class="facturas-container">
-    <h2>Facturas</h2>
 
     <!-- Mensajes -->
     <div *ngIf="mensaje" class="mensaje" [class.success]="tipoMensaje === 'success'" 
@@ -9,63 +8,62 @@
   
     <!-- Panel de Filtros -->
     <div class="filtros-panel">
-      <div class="filtros-header">
-        <button 
-          type="button" 
-          class="btn btn-filtro"
-          (click)="toggleFiltros()"
-          [ngClass]="{'activo': mostrarFiltros || filtrosActivos}"
-        >
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
-          </svg>
-          Filtros
-          <span *ngIf="filtrosActivos" class="badge-filtros">●</span>
-        </button>
-        
-        <button 
-          type="button" 
-          class="btn btn-limpiar"
-          (click)="limpiarFiltros()"
-          *ngIf="filtrosActivos"
-          title="Limpiar filtros"
-        >
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-          </svg>
-        </button>
-      </div>
+      <h2 class="titulo-facturas">Facturas</h2>
+      
+      <button 
+        type="button" 
+        class="btn btn-filtro"
+        (click)="toggleFiltros()"
+        [ngClass]="{'activo': mostrarFiltros || filtrosActivos}"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
+        </svg>
+        Filtros
+        <span *ngIf="filtrosActivos" class="badge-filtros">●</span>
+      </button>
 
-      <div class="filtros-contenido" *ngIf="mostrarFiltros">
-        <div class="filtros-grid">
-          <div class="filtro-item">
-            <label for="filtroAnio">Año</label>
-            <select 
-              id="filtroAnio" 
-              [(ngModel)]="filtroAnio" 
-              (ngModelChange)="aplicarFiltros()"
-              name="filtroAnio"
-            >
-              <option [ngValue]="null">Todos</option>
-              <option *ngFor="let anio of aniosDisponibles" [value]="anio">{{ anio }}</option>
-            </select>
-          </div>
-  
-          <div class="filtro-item">
-            <label for="filtroMes">Mes</label>
-            <select 
-              id="filtroMes" 
-              [(ngModel)]="filtroMes" 
-              (ngModelChange)="aplicarFiltros()" 
-              name="filtroMes"
-              [disabled]="!filtroAnio"
-            >
-              <option value="">Todos</option>
-              <option *ngFor="let mes of meses" [value]="mes.valor">{{ mes.nombre }}</option>
-            </select>
-          </div>
+      <!-- Filtros inline -->
+      <div class="filtros-inline" *ngIf="mostrarFiltros">
+        <div class="filtro-item">
+          <label for="filtroAnio">Año</label>
+          <select 
+            id="filtroAnio" 
+            [(ngModel)]="filtroAnio" 
+            (ngModelChange)="aplicarFiltros()"
+            name="filtroAnio"
+          >
+            <option [ngValue]="null">Todos</option>
+            <option *ngFor="let anio of aniosDisponibles" [value]="anio">{{ anio }}</option>
+          </select>
+        </div>
+
+        <div class="filtro-item">
+          <label for="filtroMes">Mes</label>
+          <select 
+            id="filtroMes" 
+            [(ngModel)]="filtroMes" 
+            (ngModelChange)="aplicarFiltros()" 
+            name="filtroMes"
+            [disabled]="!filtroAnio"
+          >
+            <option value="">Todos</option>
+            <option *ngFor="let mes of meses" [value]="mes.valor">{{ mes.nombre }}</option>
+          </select>
         </div>
       </div>
+
+      <button 
+        type="button" 
+        class="btn btn-limpiar"
+        (click)="limpiarFiltros()"
+        *ngIf="filtrosActivos"
+        title="Limpiar filtros"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
     </div>
   
     <!-- Lista de Facturas -->
@@ -101,33 +99,44 @@
           <p class="concepto-texto">{{ factura.concepto }}</p>
         </div>
   
-        <!-- Monto y acción -->
-        <div class="factura-footer">
-          <div class="monto-box">
-            <span class="monto-label">Cantidad Pagada:</span>
-            <span class="monto-valor">{{ factura.cantidad | currency:'MXN':'symbol':'1.2-2' }}</span>
-          </div>
-          
-          <div class="acciones-derecha">
-          <button
-            class="btn btn-download"
-            (click)="descargarArchivo(factura); $event.stopPropagation()"
-            [disabled]="cargando"
-            tittle="Descargar archivo"
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
-            </svg>
-          </button>
-          
-          <button class="btn-editar" (click)="abrirFormularioEdicion(factura)">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-            </svg>
-            Editar
-          </button>
+        <!-- Monto -->
+        <div class="factura-monto">
+          <span class="monto-label">Cantidad Pagada:</span>
+          <span class="monto-valor">{{ factura.cantidad | currency:'MXN':'symbol':'1.2-2' }}</span>
+        </div>
+
+        <!-- Acciones -->
+        <div class="factura-acciones">
+          <div class="acciones-izquierda">
+            <button
+              class="btn btn-download"
+              (click)="descargarArchivo(factura); $event.stopPropagation()"
+              [disabled]="cargando"
+              title="Descargar archivo"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+              </svg>
+            </button>
+            
+            <button class="btn-editar" (click)="abrirFormularioEdicion(factura)">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+              </svg>
+              Editar
+            </button>
           </div>
 
+          <button 
+            class="btn-eliminar" 
+            (click)="eliminarFactura(factura); $event.stopPropagation()"
+            [disabled]="cargando"
+            title="Eliminar factura"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+            </svg>
+          </button>
         </div>
       </div>
     </div>

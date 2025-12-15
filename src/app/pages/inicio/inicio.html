@@ -21,7 +21,7 @@
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
           </svg>
-          Órdenes Vencidas
+          Órdenes de compra sin pagar !
           <span class="badge badge-vencidas">{{ ordenesVencidas.length }}</span>
         </h3>
       </div>
@@ -30,8 +30,8 @@
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
         </svg>
-        <p>No hay órdenes vencidas</p>
-        <small>¡Todas las órdenes están al día!</small>
+        <p>No hay órdenes de compra sin pagar</p>
+        <small>¡Sin pendientes!</small>
       </div>
   
       <div class="ordenes-grid" *ngIf="ordenesVencidas.length > 0">
@@ -96,7 +96,7 @@
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
           </svg>
-          Órdenes Próximas a Vencer
+          Órdenes de compra por pagar !
           <span class="badge badge-proximas">{{ ordenesProximas.length }}</span>
         </h3>
       </div>
@@ -105,7 +105,7 @@
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
         </svg>
-        <p>No hay órdenes próximas a vencer</p>
+        <p>No hay órdenes de compra pronto a pagar</p>
         <small>¡Todo en orden por ahora!</small>
       </div>
   

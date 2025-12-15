@@ -64,10 +64,20 @@ h2 {
   flex-wrap: wrap;
 }
 
-.filtros-header {
+.titulo-facturas {
+  margin: 0 !important;
+  padding: 0.25rem 0;
+  font-size: 1.5rem;
+  color: #333;
+  font-weight: 600;
+}
+
+/* Filtros inline - aparecen a la derecha del botón */
+.filtros-inline {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 1rem;
+  animation: slideInLeft 0.3s ease-out;
 }
 
 .btn-filtro {
@@ -133,15 +143,6 @@ h2 {
   color: #ef4444;
 }
 
-/* Contenido inline con animación suave */
-.filtros-contenido {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  flex: 1;
-  animation: slideInLeft 0.3s ease-out;
-}
-
 @keyframes slideInLeft {
   from {
     opacity: 0;
@@ -151,13 +152,6 @@ h2 {
     opacity: 1;
     transform: translateX(0);
   }
-}
-
-.filtros-grid {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  flex: 1;
 }
 
 .btn-limpiar-filtros {
@@ -226,25 +220,26 @@ h2 {
   opacity: 0.6;
 }
 
-/* Grid de Facturas */
+/* Grid de Facturas - 4 por fila */
 .facturas-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  grid-template-columns: repeat(4, 1fr);
   gap: 0.75rem;
   margin-top: 1rem;
 }
 
-/* Tarjeta de Factura */
+/* Tarjeta de Factura - Compacta */
 .factura-card {
   background: #fafafa;
   border-radius: 8px;
-  padding: 0.9rem;
+  padding: 0.75rem;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
   transition: all 0.2s;
   border: 1px solid #e5e7eb;
   display: flex;
   flex-direction: column;
-  gap: 0.6rem;
+  gap: 0.5rem;
+  font-size: 0.85rem;
 }
 
 .factura-card:hover {
@@ -259,18 +254,18 @@ h2 {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding-bottom: 0.6rem;
+  padding-bottom: 0.5rem;
   border-bottom: 1px solid #e5e7eb;
 }
 
 .factura-numero {
-  font-size: 0.95rem;
+  font-size: 0.85rem;
   color: #374151;
   font-weight: 600;
 }
 
 .factura-fecha {
-  font-size: 0.7rem;
+  font-size: 0.65rem;
   color: #9ca3af;
   font-weight: 500;
 }
@@ -279,44 +274,47 @@ h2 {
 .factura-info {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: 0.35rem;
 }
 
 .info-item {
   display: flex;
-  gap: 0.5rem;
-  font-size: 0.8rem;
+  gap: 0.4rem;
+  font-size: 0.75rem;
 }
 
 .info-label {
   color: #9ca3af;
   font-weight: 500;
-  min-width: 70px;
+  min-width: 60px;
 }
 
 .info-value {
   color: #374151;
   font-weight: 600;
   flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 /* Concepto con label */
 .factura-concepto-box {
   display: flex;
   flex-direction: column;
-  gap: 0.3rem;
+  gap: 0.2rem;
 }
 
 .concepto-label {
   color: #9ca3af;
-  font-size: 0.75rem;
+  font-size: 0.7rem;
   font-weight: 500;
 }
 
 .concepto-texto {
   color: #6b7280;
-  font-size: 0.8rem;
-  line-height: 1.4;
+  font-size: 0.75rem;
+  line-height: 1.3;
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
@@ -325,47 +323,57 @@ h2 {
   margin: 0;
 }
 
-/* Footer con monto y botón */
-.factura-footer {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding-top: 0.6rem;
-  border-top: 1px solid #e5e7eb;
-}
-
-.monto-box {
+/* Monto de la factura */
+.factura-monto {
   display: flex;
   flex-direction: column;
-  gap: 0.2rem;
+  gap: 0.15rem;
+  padding-top: 0.4rem;
+  border-top: 1px solid #e5e7eb;
 }
 
 .monto-label {
   color: #9ca3af;
-  font-size: 0.7rem;
+  font-size: 0.65rem;
   font-weight: 500;
 }
 
 .monto-valor {
-  font-size: 1.1rem;
+  font-size: 0.95rem;
   font-weight: 700;
   color: #374151;
+}
+
+/* Acciones de la factura */
+.factura-acciones {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 0.5rem;
+  border-top: 1px solid #e5e7eb;
+  margin-top: auto;
+}
+
+.acciones-izquierda {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
 }
 
 /* Botón editar azul con texto */
 .btn-editar {
   display: flex;
   align-items: center;
-  gap: 0.4rem;
-  padding: 0.5rem 0.9rem;
+  gap: 0.3rem;
+  padding: 0.35rem 0.6rem;
   background: #3b82f6;
   border: none;
-  border-radius: 6px;
+  border-radius: 5px;
   cursor: pointer;
   transition: all 0.2s;
   flex-shrink: 0;
   color: white;
-  font-size: 0.85rem;
+  font-size: 0.75rem;
   font-weight: 500;
 }
 
@@ -376,8 +384,8 @@ h2 {
 }
 
 .btn-editar svg {
-  width: 16px;
-  height: 16px;
+  width: 14px;
+  height: 14px;
 }
 
 /* Botones del modal */
@@ -612,6 +620,20 @@ h2 {
   }
 }
 
+/* Pantallas grandes - 3 columnas */
+@media (max-width: 1400px) {
+  .facturas-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* Tablets - 2 columnas */
+@media (max-width: 1024px) {
+  .facturas-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
 @media (max-width: 768px) {
   .facturas-container {
     padding: 1rem;
@@ -621,9 +643,10 @@ h2 {
     grid-template-columns: 1fr;
   }
 
-  .filtros-grid {
+  .filtros-inline {
     flex-direction: column;
     align-items: stretch;
+    width: 100%;
   }
 
   .filtro-item {
@@ -645,8 +668,8 @@ h2 {
 }
 
 @media (max-width: 480px) {
-  h2 {
-    font-size: 1.25rem;
+  h2, .titulo-facturas {
+    font-size: 1.25rem !important;
   }
 
   .factura-header {
@@ -657,33 +680,47 @@ h2 {
 
   .filtros-panel {
     flex-direction: column;
-    align-items: stretch;
+    align-items: flex-start;
+    gap: 0.75rem;
   }
 
-  .filtros-header {
+  .filtros-inline {
     width: 100%;
-    justify-content: space-between;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .filtro-item {
+    width: 100%;
+  }
+
+  .factura-acciones {
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .acciones-izquierda {
+    flex: 1;
   }
 }
-/* Botón de Descargar - Izquierda del botón Editar */
+/* Botón de Descargar - Compacto */
 .btn-download {
   background-color: #17a2b8;
   color: white;
-  padding: 0.4rem 0.8rem;
-  font-size: 0.9rem;
+  padding: 0.35rem 0.5rem;
+  font-size: 0.8rem;
   font-weight: 500;
   display: flex;
   align-items: center;
-  gap: 0.3rem;
+  justify-content: center;
   border: none;
-  border-radius: 6px;
+  border-radius: 5px;
   cursor: pointer;
   transition: all 0.2s;
 }
 
 .btn-download:hover {
   background: #128091;
-  border-color: #9ca3af00;
   transform: translateY(-1px);
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
@@ -695,57 +732,49 @@ h2 {
 .btn-download:disabled {
   background: #d8d8d8;
   border-color: #e5e7eb;
-  color: #0a5eef;
+  color: #9ca3af;
   cursor: not-allowed;
   transform: none;
   box-shadow: none;
 }
 
 .btn-download svg {
-  width: 18px;
-  height: 18px;
+  width: 16px;
+  height: 16px;
 }
 
-/* Ajuste del footer para alinear los botones */
-.factura-footer {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding-top: 0.6rem;
-  border-top: 1px solid #e5e7eb;
-}
-
-/* Contenedor para botones del lado derecho */
-.factura-footer .acciones-derecha {
+/* Botón Eliminar - Compacto y separado a la derecha */
+.btn-eliminar {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-}
-
-/* Ajuste del botón Editar para que funcione con el botón de descarga a su izquierda */
-.btn-editar {
-  display: flex;
-  align-items: center;
-  gap: 0.4rem;
-  padding: 0.5rem 0.9rem;
-  background: #3b82f6;
-  border: none;
-  border-radius: 6px;
+  justify-content: center;
+  padding: 0.35rem;
+  background: #dc3545;
+  border: 1px solid #ffffff;
+  border-radius: 5px;
   cursor: pointer;
   transition: all 0.2s;
-  flex-shrink: 0;
+  color: #ffffff;
+}
+
+.btn-eliminar:hover {
+  background: #dc2626;
+  border-color: #dc2626;
   color: white;
-  font-size: 0.85rem;
-  font-weight: 500;
-}
-
-.btn-editar:hover {
-  background: #2563eb;
   transform: translateY(-1px);
-  box-shadow: 0 4px 8px rgba(59, 130, 246, 0.3);
+  box-shadow: 0 4px 8px rgba(220, 38, 38, 0.3);
 }
 
-.btn-editar svg {
+.btn-eliminar:disabled {
+  background: #f3f4f6;
+  border-color: #e5e7eb;
+  color: #9ca3af;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.btn-eliminar svg {
   width: 16px;
   height: 16px;
 }

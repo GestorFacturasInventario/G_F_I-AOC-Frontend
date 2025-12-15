@@ -272,6 +272,33 @@ export class FacturasComponent implements OnInit, OnDestroy {
     });
   }
 
+  async eliminarFactura(factura: Factura): Promise<void> {
+    const confirmacion = await this.confirmarService.confirm({
+      titulo: 'Eliminar Factura',
+      mensaje: `¿Estás seguro de querer eliminar la factura: "${factura.numero_fac}"?`,
+      textoConfirmar: 'Si, eliminar',
+      textoCancelar: 'Cancelar',
+      tipo: 'danger'
+    });
+
+    if (!confirmacion) return;
+
+    this.cargando = true;
+    this.facturasService.eliminarFactura(factura._id!).subscribe({
+      next: () => {
+        this.mostrarMensaje('Factura eliminada correctamente', 'success');
+        this.cargarFacturas();
+        this.cargando = false;
+      },
+      error: (error) => {
+        console.error('Error al eliminar factura: ', error);
+        const mensaje = error.error?.mensaje || 'Error al eliminar factura';
+        this.mostrarMensaje(mensaje, 'error');
+        this.cargando = false;
+      }
+    });
+  }
+
   // Utilidades
   formatearFecha(fecha: string): string {
     const date = new Date(fecha);

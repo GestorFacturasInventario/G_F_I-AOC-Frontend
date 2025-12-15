@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
 
@@ -13,6 +13,10 @@ export interface Articulo {
   updatedAt?: Date;
 }
 
+export interface FiltrosArticulo {
+  q?: string;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -21,31 +25,15 @@ export class ArticulosService {
 
   constructor(private http: HttpClient) {}
 
-  private getHeaders(): HttpHeaders {
-    const token = localStorage.getItem('token');
-    return new HttpHeaders({
-      'Authorization': `Bearer ${token}`,
-      'Content-Type': 'application/json'
-    });
-  }
-
-  buscarArticulos(query: string): Observable<{ total: number; articulo: Articulo[] }> {
-    return this.http.post<{ total: number; articulo: Articulo[] }>(
-      `${this.apiUrl}/serch/items`,
-      {},
-      { 
-        headers: this.getHeaders(),
-        params: { q: query }
-      }
-    );
-  }
-
   obtenerArticulos(): Observable<Articulo[]> {
     return this.http.get<Articulo[]>(`${this.apiUrl}/index`);
   }
 
-  obtenerUrlDescarga(articuloId: string): Observable<{ url: string }> {
-    return this.http.get<{ url: string }>(`${this.apiUrl}/download/${articuloId}`);
+  buscarArticulo(filtros: FiltrosArticulo): Observable<{total: number, articulo: Articulo[]}> {
+    let params = new HttpParams();
+    if (filtros.q) params = params.set('q', filtros.q);
+
+    return this.http.get<{total: number, articulo: Articulo[]}>(`${this.apiUrl}/search`, { params });
   }
 
   crearArticulo(datos: FormData): Observable<Articulo> {

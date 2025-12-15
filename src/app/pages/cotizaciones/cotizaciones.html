@@ -53,7 +53,7 @@
             type="file" 
             id="archivo_cot" 
             (change)="onArchivoSeleccionado($event, 'cotizacion')"
-            accept=".pdf,.jpg,.jpeg,.png,.doc,.docx,.xls,.xlsx"
+            accept=".pdf,.doc,.docx,.xls,.xlsx"
             [disabled]="cargando"
           />
           <small *ngIf="nombreArchivo" class="archivo-info">

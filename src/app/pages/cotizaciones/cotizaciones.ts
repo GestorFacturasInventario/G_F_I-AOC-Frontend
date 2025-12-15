@@ -321,7 +321,7 @@ export class CotizacionesComponent implements OnInit {
           const mensaje = error.error?.mensaje || 'Error al crear cotización';
           this.mostrarMensaje(mensaje, 'error');
           this.cargando = false;
-        }
+      }
       });
     }
   }
